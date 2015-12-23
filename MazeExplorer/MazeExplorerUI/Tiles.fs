@@ -1,6 +1,7 @@
 ﻿module Tiles
 
 let room = RoomTiles.createCardinal Colors.Transparent Colors.Emerald
+let lock = RoomTiles.createCardinalLocks Colors.Transparent Colors.Onyx
 
 let explorer = ExplorerTiles.createCardinal Colors.Transparent Colors.Silver
 

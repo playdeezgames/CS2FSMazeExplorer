@@ -49,6 +49,7 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
@@ -61,8 +62,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MazeExplorerLibrary\MazeExplorerLibrary.fsproj">
       <Name>MazeExplorerLibrary</Name>
       <Project>{752f2e8a-8833-45f2-8722-ca03357ea4dd}</Project>

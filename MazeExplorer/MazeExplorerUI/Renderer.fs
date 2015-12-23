@@ -3,6 +3,11 @@
 open Location
 open GameData
 
+let determineLockTile (exits:Set<Cardinal.Direction>) =
+    let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
+    Tiles.lock |> Map.tryFind flags
+        
+
 let determineCellTile (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
     Tiles.room.[flags]
@@ -11,6 +16,17 @@ let toDirections location (exits:Set<Location>) =
     Cardinal.values
     |> List.filter (fun d->d |> Cardinal.walk location |> exits.Contains )
     |> Set.ofList
+
+let renderLock (location:Location) (exits:Set<Location>) (isLocked:bool) =
+    if isLocked then
+        exits
+        |> toDirections location
+        |> determineLockTile
+        |> Option.get
+        |> FrameBuffer.RenderTile (location.Column, location.Row)
+    else
+        ()
+
 
 let renderWalls (location:Location) (exits:Set<Location>) =
     exits
@@ -32,13 +48,14 @@ let renderItem item location =
     | None -> ()
 
 
-let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option)=
+let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (isLocked:bool)=
     if visible then
         Tiles.Visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         location
         |> renderItem item
         renderWalls location exits
+        renderLock location exits isLocked
     elif visited then
         Tiles.Empty
         |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -56,7 +73,11 @@ let statusTable =
 
 let redraw graphics =
     explorer.Maze
-    |> Map.iter(fun k v -> renderRoom k v (k |> explorer.State.Visited.Contains) (k |> explorer.State.Visible.Contains) (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None))
+    |> Map.iter(fun k v -> renderRoom k v 
+                                (k |> explorer.State.Visited.Contains) //visited
+                                (k |> explorer.State.Visible.Contains) //visible
+                                (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
+                                (k |> explorer.State.Locks.Contains)) //locked
     Tiles.explorer.[explorer.Orientation]
     |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
     Tiles.sapphireFont

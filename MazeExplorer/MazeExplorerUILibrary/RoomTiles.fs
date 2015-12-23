@@ -25,3 +25,5 @@ let createCardinalLocks background foreground =
      ((false,true,false,false), RoomPatterns.LockE);
      ((false,false,true,false), RoomPatterns.LockS);
      ((false,false,false,true), RoomPatterns.LockW)]
+    |> Seq.map (fun (k,p) -> (k, new Tile.Tile(p,background,foreground)))
+    |> Map.ofSeq

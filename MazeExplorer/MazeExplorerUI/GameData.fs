@@ -26,6 +26,7 @@ let generateItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) i
 type State = 
     {Visited: Set<Location>; 
     Items: Map<Location,ItemType>; 
+    Locks: Set<Location>;
     Visible: Set<Location>; 
     Loot:int;
     Health:int;
@@ -81,6 +82,17 @@ let getExplorerState explorer =
     else
         Alive
 
+let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal.Direction, State>) =
+    let keyCells, otherCells =
+        explorer.State.Items
+        |> Map.partition (fun k v->v = Key)
+    let lockLocations = 
+        otherCells
+        |> Map.toSeq
+        |> Seq.map (fun (k,v)->k)
+        |> Utility.pickMultiple keyCells.Count
+        |> Set.ofSeq
+    {explorer with State = {explorer.State with Locks=lockLocations}}
 
 let restart () :Explorer<Cardinal.Direction, State>= 
     let gridLocations = 
@@ -89,21 +101,45 @@ let restart () :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker Utility.findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values {Visited=Set.empty; Items=Map.empty; Visible=Set.empty; Loot=0; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now}
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values {Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Loot=0; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now}
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations newExplorer.Maze;
                     Visible = visibleLocations (newExplorer.Position, newExplorer.Orientation, newExplorer.Maze); 
                     Visited = [newExplorer.Position] |> Set.ofSeq}}
+    |> addLocks Utility.pickMultiple
+
+let updateVisited next state =
+    {state with Visited = next |> state.Visited.Add |> Set.union state.Visible}
+
+let updateVisible locations state =
+    {state with Visible = locations}
+
+let updateLock next state =
+    if next |> state.Locks.Contains then
+        {state with Locks=next |> state.Locks.Remove; Keys = state.Keys-1}
+    else
+        state
+
+let updateInventory next state =
+    match state.Items |> Map.tryFind next with
+    | Some Treasure -> {state with Items = next |> state.Items.Remove; Loot = state.Loot + 1}
+    | Some Trap ->  {state with Items = next |> state.Items.Remove; Health = state.Health - 1}
+    | Some Key -> {state with Items = next |> state.Items.Remove; Keys = state.Keys + 1}
+    | None -> state
 
 let updateState next explorer =
-    {explorer.State with 
-        Visited = next |> explorer.State.Visited.Add |> Set.union explorer.State.Visible; 
-        Visible = visibleLocations(next, explorer.Orientation, explorer.Maze)
-        Items = next |> explorer.State.Items.Remove
-        Keys = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Key then explorer.State.Keys + 1 else explorer.State.Keys
-        Loot = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Treasure then explorer.State.Loot + 1 else explorer.State.Loot
-        Health = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Trap then explorer.State.Health - 1 else explorer.State.Health }
+    explorer.State
+    |> updateVisited next
+    |> updateVisible ((next, explorer.Orientation, explorer.Maze) |> visibleLocations)
+    |> updateLock next
+    |> updateInventory next
+
+let canEnter next (explorer: Explorer<Cardinal.Direction, State>) =
+    let canGo = next |> explorer.Maze.[explorer.Position].Contains
+    let isLocked = next |> explorer.State.Locks.Contains
+    let hasKey = explorer.State.Keys > 0
+    canGo && if isLocked then hasKey else true
 
 let enterLocation next explorer =
     {explorer with 
@@ -114,7 +150,7 @@ let moveAction (explorer: Explorer<Cardinal.Direction, State>) =
     let next =
         explorer.Orientation
         |> Cardinal.walk explorer.Position
-    if next |> explorer.Maze.[explorer.Position].Contains then
+    if explorer |> canEnter next then
         explorer
         |> enterLocation next
     else
