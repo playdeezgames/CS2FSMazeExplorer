@@ -90,7 +90,7 @@ let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal
         otherCells
         |> Map.toSeq
         |> Seq.map (fun (k,v)->k)
-        |> Utility.pickMultiple keyCells.Count
+        |> rng keyCells.Count
         |> Set.ofSeq
     {explorer with State = {explorer.State with Locks=lockLocations}}
 
