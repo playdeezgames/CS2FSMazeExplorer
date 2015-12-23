@@ -14,7 +14,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyProduct("MazeExplorer.TrapsAndTreasures.UI")>]
 [<assembly: AssemblyCopyright("Copyright © csharptofsharp.wordpress.com 2015")>]
 [<assembly: AssemblyTrademark("")>]
-[<assembly: AssemblyCulture("en-US")>]
+[<assembly: AssemblyCulture("")>]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
