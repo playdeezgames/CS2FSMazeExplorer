@@ -176,4 +176,48 @@ let RoomsNESW =
      "X......X"]
     |> Pattern.patternFromStringListX
 
+let LockN = 
+    [".XXXXXX.";
+     "........";
+     "........";
+     "........";
+     "........";
+     "........";
+     "........";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+let LockE = 
+    ["........";
+     ".......X";
+     ".......X";
+     ".......X";
+     ".......X";
+     ".......X";
+     ".......X";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+let LockS = 
+    ["........";
+     "........";
+     "........";
+     "........";
+     "........";
+     "........";
+     "........";
+     ".XXXXXX."]
+    |> Pattern.patternFromStringListX
+
+let LockW = 
+    ["........";
+     "X.......";
+     "X.......";
+     "X.......";
+     "X.......";
+     "X.......";
+     "X.......";
+     "........"]
+    |> Pattern.patternFromStringListX
+
 

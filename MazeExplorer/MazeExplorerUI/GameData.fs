@@ -13,9 +13,12 @@ let TimeLimit = 300
 type ItemType = 
     | Treasure
     | Trap
+    | Key
 
 let itemGenerator =
-    [(Treasure,1);(Trap,1)]
+    [(Treasure,3);
+    (Trap,2);
+    (Key,1)]
     |> WeightedGenerator.ofPairs
 
 let generateItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) itemGenerator
@@ -26,6 +29,7 @@ type State =
     Visible: Set<Location>; 
     Loot:int;
     Health:int;
+    Keys:int;
     StartTime: System.DateTime}
 
 let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:Maze.Maze) =
@@ -85,7 +89,7 @@ let restart () :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker Utility.findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values {Visited=Set.empty; Items=Map.empty; Visible=Set.empty; Loot=0; Health=InitialHealth; StartTime=System.DateTime.Now}
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values {Visited=Set.empty; Items=Map.empty; Visible=Set.empty; Loot=0; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now}
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations newExplorer.Maze;
@@ -97,6 +101,7 @@ let updateState next explorer =
         Visited = next |> explorer.State.Visited.Add |> Set.union explorer.State.Visible; 
         Visible = visibleLocations(next, explorer.Orientation, explorer.Maze)
         Items = next |> explorer.State.Items.Remove
+        Keys = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Key then explorer.State.Keys + 1 else explorer.State.Keys
         Loot = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Treasure then explorer.State.Loot + 1 else explorer.State.Loot
         Health = if next |> explorer.State.Items.ContainsKey && explorer.State.Items.[next] = Trap then explorer.State.Health - 1 else explorer.State.Health }
 

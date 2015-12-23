@@ -20,6 +20,9 @@ let renderWalls (location:Location) (exits:Set<Location>) =
 
 let renderItem item location =
     match item with
+    | Some Key ->
+                    ExplorerTiles.Key
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
     | Some Treasure ->
                     ExplorerTiles.Treasure
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -66,9 +69,11 @@ let redraw graphics =
     |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
     Tiles.sapphireFont
     |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
+    Tiles.goldFont
+    |> FrameBuffer.renderString (MazeColumns,3) (explorer.State.Keys |> sprintf "Keys %3i" )
     let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
     font
-    |> FrameBuffer.renderString (MazeColumns, 3) text
+    |> FrameBuffer.renderString (MazeColumns, 4) text
     let timeRemaining = explorer |> GameData.getTimeLeft
     if (explorer |> GameData.getExplorerState) = GameData.Alive then
         let timeFont = 
@@ -79,10 +84,10 @@ let redraw graphics =
             else
                 Tiles.garnetFont
         timeFont
-        |> FrameBuffer.renderString (MazeColumns,4) (timeRemaining |> sprintf "Time %3i")
+        |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
     else
         Tiles.garnetFont
-        |> FrameBuffer.renderString (MazeColumns,4) "        "
+        |> FrameBuffer.renderString (MazeColumns,5) "        "
     
 
 

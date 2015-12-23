@@ -55,3 +55,14 @@ let Treasure =
      "........";
      "........"]
     |> Pattern.patternFromStringListX
+
+let Key =
+    ["........";
+     "..XXX...";
+     "..X.X...";
+     "...X....";
+     "..XX....";
+     "...X....";
+     "..XX....";
+     "........"]
+    |> Pattern.patternFromStringListX

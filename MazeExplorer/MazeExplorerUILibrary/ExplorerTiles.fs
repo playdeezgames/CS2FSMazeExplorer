@@ -11,3 +11,4 @@ let createCardinal background foreground =
 
 let Treasure = new Tile.Tile(ExplorerPatterns.Treasure, Colors.Transparent, Colors.Gold)
 let Trap = new Tile.Tile(ExplorerPatterns.Treasure, Colors.Transparent, Colors.Onyx)
+let Key = new Tile.Tile(ExplorerPatterns.Key, Colors.Transparent, Colors.Onyx)
