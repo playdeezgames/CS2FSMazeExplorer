@@ -8,7 +8,7 @@ let TileRows = 18
 let MazeColumns = 24
 let MazeRows = TileRows
 let InitialHealth = 3
-let TimeLimit = 3//00
+let TimeLimit = 300
 
 type ItemType = 
     | Treasure
