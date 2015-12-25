@@ -34,32 +34,44 @@ let renderWalls (location:Location) (exits:Set<Location>) =
     |> determineCellTile
     |> FrameBuffer.RenderTile (location.Column, location.Row)
 
-let renderItem item location =
-    match item with
-    | Some Key ->
+let renderItem item isLocked gameOver location =
+    match (gameOver || not isLocked), item with
+    | true, Some Key ->
                     ExplorerTiles.Key
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | Some Treasure ->
+    | true, Some Treasure ->
                     ExplorerTiles.Treasure
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | Some Trap ->
+    | true, Some Trap ->
                     ExplorerTiles.Trap
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | None -> ()
+    | _,_ -> ()
 
 
-let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (isLocked:bool)=
+let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (isLocked:bool) (gameOver:bool) =
     if visible then
         Tiles.Visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         location
-        |> renderItem item
+        |> renderItem item isLocked gameOver
+        renderWalls location exits
+        renderLock location exits isLocked
+    elif gameOver then
+        if visited then
+            Tiles.Empty
+            |> FrameBuffer.RenderTile (location.Column, location.Row)
+        else
+            Tiles.NeverVisited
+            |> FrameBuffer.RenderTile (location.Column, location.Row)
+        location
+        |> renderItem item isLocked gameOver
         renderWalls location exits
         renderLock location exits isLocked
     elif visited then
         Tiles.Empty
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         renderWalls location exits
+        renderLock location exits isLocked
     else
         Tiles.Hidden
         |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -77,7 +89,8 @@ let redraw graphics =
                                 (k |> explorer.State.Visited.Contains) //visited
                                 (k |> explorer.State.Visible.Contains) //visible
                                 (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
-                                (k |> explorer.State.Locks.Contains)) //locked
+                                (k |> explorer.State.Locks.Contains) //locked
+                                (explorer |> getExplorerState = Alive |> not)) //game over
     Tiles.explorer.[explorer.Orientation]
     |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
     Tiles.sapphireFont

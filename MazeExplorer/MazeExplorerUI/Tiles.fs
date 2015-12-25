@@ -14,3 +14,4 @@ let Filled = new Tile.Tile(CommonPatterns.Filled, Colors.Transparent, Colors.Ame
 let Empty = new Tile.Tile(CommonPatterns.Empty, Colors.Tin, Colors.Tin)
 let Visible = new Tile.Tile(CommonPatterns.Empty, Colors.Copper, Colors.Copper)
 let Hidden = new Tile.Tile(CharacterPatterns.character63, Colors.Jade, Colors.Onyx)
+let NeverVisited = new Tile.Tile(CommonPatterns.Empty, Colors.Carnelian, Colors.Carnelian)

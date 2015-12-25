@@ -8,7 +8,7 @@ let TileRows = 18
 let MazeColumns = 24
 let MazeRows = TileRows
 let InitialHealth = 3
-let TimeLimit = 300
+let TimeLimit = 3//00
 
 type ItemType = 
     | Treasure
@@ -132,27 +132,38 @@ let updateState next explorer =
     explorer.State
     |> updateVisited next
     |> updateVisible ((next, explorer.Orientation, explorer.Maze) |> visibleLocations)
-    |> updateLock next
     |> updateInventory next
+
+let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
+    next
+    |> explorer.State.Locks.Contains
 
 let canEnter next (explorer: Explorer<Cardinal.Direction, State>) =
     let canGo = next |> explorer.Maze.[explorer.Position].Contains
-    let isLocked = next |> explorer.State.Locks.Contains
+    let isLocked = explorer |> mustUnlock next
     let hasKey = explorer.State.Keys > 0
     canGo && if isLocked then hasKey else true
+
 
 let enterLocation next explorer =
     {explorer with 
         Position = next; 
         State = explorer |> updateState next}
 
+let unlockLocation next explorer =
+    {explorer with State = explorer.State |> updateLock next}
+
 let moveAction (explorer: Explorer<Cardinal.Direction, State>) = 
     let next =
         explorer.Orientation
         |> Cardinal.walk explorer.Position
     if explorer |> canEnter next then
-        explorer
-        |> enterLocation next
+        if explorer |> mustUnlock next then
+            explorer
+            |> unlockLocation next
+        else
+            explorer
+            |> enterLocation next
     else
         explorer
 
