@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MazeExplorerLibrary", "MazeExplorerLibrary\MazeExplorerLibrary.fsproj", "{752F2E8A-8833-45F2-8722-CA03357EA4DD}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MazeExplorerUILibrary", "MazeExplorerUILibrary\MazeExplorerUILibrary.fsproj", "{3D81A38C-F39B-46E8-9E5F-33211BC21AB2}"
