@@ -66,3 +66,49 @@ let Key =
      "..XX....";
      "........"]
     |> Pattern.patternFromStringListX
+
+    
+let Sword =
+    ["........";
+     "...X....";
+     "...X....";
+     "...X....";
+     "..XXX...";
+     "...X....";
+     "........";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+
+let Shield =
+    ["........";
+     ".XXXXX..";
+     ".XXXXX..";
+     ".XXXXX..";
+     "..XXX...";
+     "...X....";
+     "........";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+let Hourglass =
+    ["........";
+     ".XXXXX..";
+     "..XXX...";
+     "...X....";
+     "..XXX...";
+     ".XXXXX..";
+     "........";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+let Potion =
+    ["........";
+     "...XX...";
+     "...XX...";
+     "..XXXX..";
+     ".XXXXXX.";
+     ".XXXXXX.";
+     "..XXXX..";
+     "........"]
+    |> Pattern.patternFromStringListX

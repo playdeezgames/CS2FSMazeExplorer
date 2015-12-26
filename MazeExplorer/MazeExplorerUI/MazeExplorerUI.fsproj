@@ -55,6 +55,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Tiles.fs" />
     <Compile Include="Utility.fs" />
+    <Compile Include="Audio.fs" />
     <Compile Include="GameData.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="Input.fs" />
@@ -62,6 +63,27 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="icon.ico" />
+    <Content Include="Loot.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Hourglass.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Key.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Potion.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shield.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sword.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Trap.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

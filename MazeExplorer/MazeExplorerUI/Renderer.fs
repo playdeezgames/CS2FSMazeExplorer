@@ -45,6 +45,18 @@ let renderItem item isLocked gameOver location =
     | true, Some Trap ->
                     ExplorerTiles.Trap
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some Sword ->
+                    ExplorerTiles.Sword
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some Shield ->
+                    ExplorerTiles.Shield
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some Potion ->
+                    ExplorerTiles.Potion
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some Hourglass ->
+                    ExplorerTiles.Hourglass
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
     | _,_ -> ()
 
 
@@ -96,7 +108,7 @@ let redraw graphics =
     Tiles.sapphireFont
     |> FrameBuffer.renderString (MazeColumns,0) (explorer.State.Visited |> Set.count |> sprintf "Room %3i")
     Tiles.goldFont
-    |> FrameBuffer.renderString (MazeColumns,1) (explorer.State.Loot |> sprintf "Loot %3i" )
+    |> FrameBuffer.renderString (MazeColumns,1) (explorer.State |> getCounter Loot |> sprintf "Loot %3i" )
     Tiles.garnetFont
     |> FrameBuffer.renderString (MazeColumns,2) (explorer.State.Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
     Tiles.sapphireFont

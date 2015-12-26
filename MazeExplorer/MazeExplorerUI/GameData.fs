@@ -9,16 +9,31 @@ let MazeColumns = 24
 let MazeRows = TileRows
 let InitialHealth = 3
 let TimeLimit = 300
+let TimeBonusPerHourglass = 60.
 
 type ItemType = 
     | Treasure
     | Trap
     | Key
+    | Sword
+    | Shield
+    | Hourglass
+    | Potion
+
+type CounterType =
+    | Loot
+    | Health
+    | Keys
+    | Potions
 
 let itemGenerator =
-    [(Treasure,3);
-    (Trap,2);
-    (Key,1)]
+    [(Treasure,30);
+    (Trap,20);
+    (Sword,5);
+    (Shield,5);
+    (Potion,5);
+    (Hourglass,1);
+    (Key,10)]
     |> WeightedGenerator.ofPairs
 
 let generateItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) itemGenerator
@@ -28,7 +43,8 @@ type State =
     Items: Map<Location,ItemType>; 
     Locks: Set<Location>;
     Visible: Set<Location>; 
-    Loot:int;
+    Counters : Map<CounterType,int>;
+    //Loot:int;
     Health:int;
     Keys:int;
     StartTime: System.DateTime}
@@ -94,6 +110,22 @@ let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal
         |> Set.ofSeq
     {explorer with State = {explorer.State with Locks=lockLocations}}
 
+let setCounter counterType value (state:State) =
+    {state with Counters= state.Counters |> Map.add counterType value}
+
+let getCounter counterType (state:State) =
+    match state.Counters |> Map.tryFind counterType with
+    | Some value -> value
+    | None       -> 0
+
+let changeCounter counterType delta  (state:State)=
+    state
+    |> setCounter counterType ((state |> getCounter counterType) + delta)
+
+let initializeCounters state =
+    state
+    |> setCounter Health InitialHealth
+
 let restart () :Explorer<Cardinal.Direction, State>= 
     let gridLocations = 
         Utility.makeGrid (MazeColumns, MazeRows)
@@ -101,7 +133,7 @@ let restart () :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker Utility.findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values {Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Loot=0; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now}
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now} |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations newExplorer.Maze;
@@ -121,12 +153,51 @@ let updateLock next state =
     else
         state
 
+let pickupItem next state =
+    {state with Items = next |> state.Items.Remove}
+
+let pickupTreasure next state =
+    Audio.lootSound.Play()
+    state
+    |> changeCounter Loot 1
+
+let pickupTrap next state =
+    Audio.trapSound.Play()
+    {state with Health = state.Health - 1}
+
+let pickupKey next state =
+    Audio.keySound.Play()
+    {state with Keys = state.Keys + 1}
+
+let pickupSword next state =
+    Audio.swordSound.Play()
+    state
+
+let pickupShield next state =
+    Audio.shieldSound.Play()
+    state
+
+let pickupPotion next state =
+    Audio.potionSound.Play()
+    state
+
+let pickupHourglass next state =
+    Audio.hourglassSound.Play()
+    {state with StartTime = TimeBonusPerHourglass |> state.StartTime.AddSeconds}
+    
+
 let updateInventory next state =
     match state.Items |> Map.tryFind next with
-    | Some Treasure -> {state with Items = next |> state.Items.Remove; Loot = state.Loot + 1}
-    | Some Trap ->  {state with Items = next |> state.Items.Remove; Health = state.Health - 1}
-    | Some Key -> {state with Items = next |> state.Items.Remove; Keys = state.Keys + 1}
+    | Some Treasure -> state |> pickupTreasure next
+    | Some Trap -> state |> pickupTrap next
+    | Some Key -> state |> pickupKey next
+    | Some Sword -> state |> pickupSword next
+    | Some Shield -> state |> pickupShield next
+    | Some Potion -> state |> pickupPotion next
+    | Some Hourglass -> state |> pickupHourglass next
     | None -> state
+
+    |> pickupItem next
 
 let updateState next explorer =
     explorer.State
