@@ -16,4 +16,5 @@ let Sword =  new Tile.Tile(ExplorerPatterns.Sword, Colors.Transparent, Colors.Si
 let Potion =  new Tile.Tile(ExplorerPatterns.Potion, Colors.Transparent, Colors.Garnet)
 let Shield =  new Tile.Tile(ExplorerPatterns.Shield, Colors.Transparent, Colors.Silver)
 let Hourglass =  new Tile.Tile(ExplorerPatterns.Hourglass, Colors.Transparent, Colors.Amethyst)
+let LoveInterest = new Tile.Tile(ExplorerPatterns.LoveInterest, Colors.Transparent, Colors.Garnet)
 

@@ -112,3 +112,14 @@ let Potion =
      "..XXXX..";
      "........"]
     |> Pattern.patternFromStringListX
+
+let LoveInterest =
+    ["........";
+     ".XX.XX..";
+     ".XXXXX..";
+     ".XXXXX..";
+     "..XXX...";
+     "...X....";
+     "........";
+     "........"]
+    |> Pattern.patternFromStringListX

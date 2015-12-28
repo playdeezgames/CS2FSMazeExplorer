@@ -61,6 +61,9 @@ let renderItem item isLocked gameOver location =
     | true, Some Hourglass ->
                     ExplorerTiles.Hourglass
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some LoveInterest ->
+                    ExplorerTiles.LoveInterest
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
     | _,_ -> ()
 
 

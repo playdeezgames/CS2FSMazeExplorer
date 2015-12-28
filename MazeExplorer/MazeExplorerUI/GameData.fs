@@ -8,7 +8,7 @@ let TileRows = 18
 let MazeColumns = 24
 let MazeRows = TileRows
 let InitialHealth = 3
-let TimeLimit = 300
+let TimeLimit = 3//00
 let TimeBonusPerHourglass = 60.
 
 type GameEvent =
@@ -22,6 +22,7 @@ type ItemType =
     | Shield
     | Hourglass
     | Potion
+    | LoveInterest
 
 type CounterType =
     | Loot
@@ -29,17 +30,34 @@ type CounterType =
     | Keys
     | Potions
 
-let itemGenerator =
+let fixedItemList =
+    [(LoveInterest,1);
+    (Sword,4)]
+    |> List.map (fun (k,v)-> [1..v] |> List.map (fun e-> k))
+    |> List.reduce (@)
+    |> Seq.ofList
+
+let variableItems =
     [(Treasure,30);
     (Trap,20);
-    (Sword,5);
     (Shield,5);
     (Potion,5);
     (Hourglass,1);
     (Key,10)]
     |> WeightedGenerator.ofPairs
 
-let generateItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) itemGenerator
+let generateVariableItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) variableItems
+
+let generateItemList count =
+    let fixedItems = 
+        fixedItemList
+        |> Seq.truncate count
+    let variableItems =
+        [1..count - (fixedItems |> Seq.length)]
+        |> Seq.map (fun e-> generateVariableItem())
+    fixedItems
+    |> Seq.append variableItems
+    |> Seq.sortBy (fun e->Utility.random.Next())
 
 type State = 
     {Visited: Set<Location>; 
@@ -59,11 +77,15 @@ let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:
         |> Set.ofSeq
 
 let itemLocations (maze:Maze.Maze) =
-    maze
-    |> Map.toSeq
-    |> Seq.filter (fun (location, exits) -> (exits |> Set.count) = 1)
-    |> Seq.map (fun (location, exits) -> location, generateItem())
+    let locations = 
+        maze
+        |> Map.toSeq
+        |> Seq.filter (fun (location, exits) -> (exits |> Set.count) = 1)
+        |> Seq.map (fun (k,v)->k)
+    generateItemList (locations |> Seq.length)
+    |> Seq.zip locations
     |> Map.ofSeq
+
 
 let createExplorer = Explorer.create (fun l->Utility.random.Next()) (fun d->Utility.random.Next())
 
@@ -80,7 +102,7 @@ let getCounter counterType (state:State) =
 let isDead explorer = 
     explorer.State
     |> getCounter Health
-    |> (>=) 0
+    <= 0
 
 type ExplorerState = 
     | Win
@@ -207,6 +229,7 @@ let updateInventory eventHandler next state =
     | Some Shield -> state |> pickupShield eventHandler next
     | Some Potion -> state |> pickupPotion eventHandler next
     | Some Hourglass -> state |> pickupHourglass eventHandler next
+    | Some LoveInterest -> state
     | None -> state
 
     |> pickupItem next
@@ -224,7 +247,7 @@ let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
 let canEnter next (explorer: Explorer<Cardinal.Direction, State>) =
     let canGo = next |> explorer.Maze.[explorer.Position].Contains
     let isLocked = explorer |> mustUnlock next
-    let hasKey = explorer.State |> getCounter Keys |> (<=) 1
+    let hasKey = explorer.State |> getCounter Keys > 0
     canGo && if isLocked then hasKey else true
 
 
