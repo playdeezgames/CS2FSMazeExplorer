@@ -19,7 +19,7 @@ let keyDown (event:KeyEventArgs) =
     match command with
     | Wait -> false
     | _ -> 
-            explorer <- explorer |> act command
+            explorer <- explorer |> act Renderer.handleGameEvent command
             true
 
 

@@ -3,6 +3,10 @@
 open Location
 open GameData
 
+let handleGameEvent (event:GameData.GameEvent) =
+    match event with
+    | PlaySound sfx -> Audio.playSound sfx
+
 let determineLockTile (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
     Tiles.lock |> Map.tryFind flags
@@ -110,13 +114,13 @@ let redraw graphics =
     Tiles.goldFont
     |> FrameBuffer.renderString (MazeColumns,1) (explorer.State |> getCounter Loot |> sprintf "Loot %3i" )
     Tiles.garnetFont
-    |> FrameBuffer.renderString (MazeColumns,2) (explorer.State.Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
+    |> FrameBuffer.renderString (MazeColumns,2) (explorer.State |> getCounter Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
     Tiles.sapphireFont
     |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
     Tiles.sapphireFont
     |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
     Tiles.goldFont
-    |> FrameBuffer.renderString (MazeColumns,3) (explorer.State.Keys |> sprintf "Keys %3i" )
+    |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
     let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
     font
     |> FrameBuffer.renderString (MazeColumns, 4) text

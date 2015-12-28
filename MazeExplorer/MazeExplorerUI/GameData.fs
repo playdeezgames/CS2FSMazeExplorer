@@ -11,6 +11,9 @@ let InitialHealth = 3
 let TimeLimit = 300
 let TimeBonusPerHourglass = 60.
 
+type GameEvent =
+    | PlaySound of Audio.Sfx
+
 type ItemType = 
     | Treasure
     | Trap
@@ -44,9 +47,6 @@ type State =
     Locks: Set<Location>;
     Visible: Set<Location>; 
     Counters : Map<CounterType,int>;
-    //Loot:int;
-    Health:int;
-    Keys:int;
     StartTime: System.DateTime}
 
 let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:Maze.Maze) =
@@ -72,8 +72,15 @@ let wonGame (explorer:Explorer.Explorer<Cardinal.Direction,State>) =
     |> Map.tryPick (fun k v -> if v = Treasure then Some k else None)
     |> Option.isNone
 
+let getCounter counterType (state:State) =
+    match state.Counters |> Map.tryFind counterType with
+    | Some value -> value
+    | None       -> 0
+
 let isDead explorer = 
-    explorer.State.Health <= 0
+    explorer.State
+    |> getCounter Health
+    |> (>=) 0
 
 type ExplorerState = 
     | Win
@@ -113,11 +120,6 @@ let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal
 let setCounter counterType value (state:State) =
     {state with Counters= state.Counters |> Map.add counterType value}
 
-let getCounter counterType (state:State) =
-    match state.Counters |> Map.tryFind counterType with
-    | Some value -> value
-    | None       -> 0
-
 let changeCounter counterType delta  (state:State)=
     state
     |> setCounter counterType ((state |> getCounter counterType) + delta)
@@ -126,14 +128,14 @@ let initializeCounters state =
     state
     |> setCounter Health InitialHealth
 
-let restart () :Explorer<Cardinal.Direction, State>= 
+let restart eventHandler :Explorer<Cardinal.Direction, State>= 
     let gridLocations = 
         Utility.makeGrid (MazeColumns, MazeRows)
     let newExplorer = 
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker Utility.findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; Health=InitialHealth; Keys=0; StartTime=System.DateTime.Now} |> initializeCounters)
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; StartTime=System.DateTime.Now} |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations newExplorer.Maze;
@@ -149,61 +151,71 @@ let updateVisible locations state =
 
 let updateLock next state =
     if next |> state.Locks.Contains then
-        {state with Locks=next |> state.Locks.Remove; Keys = state.Keys-1}
+        {state with Locks=next |> state.Locks.Remove}
+        |> changeCounter Keys -1
     else
         state
 
 let pickupItem next state =
     {state with Items = next |> state.Items.Remove}
 
-let pickupTreasure next state =
-    Audio.lootSound.Play()
+let pickupTreasure eventHandler next state =
+    PlaySound Audio.AcquireLoot
+    |> eventHandler
     state
     |> changeCounter Loot 1
 
-let pickupTrap next state =
-    Audio.trapSound.Play()
-    {state with Health = state.Health - 1}
+let pickupTrap eventHandler next state =
+    PlaySound Audio.TriggerTrap
+    |> eventHandler
+    state
+    |> changeCounter Health -1
 
-let pickupKey next state =
-    Audio.keySound.Play()
-    {state with Keys = state.Keys + 1}
+let pickupKey eventHandler next state =
+    PlaySound Audio.AcquireKey
+    |> eventHandler
+    state
+    |> changeCounter Keys 1
 
-let pickupSword next state =
-    Audio.swordSound.Play()
+let pickupSword eventHandler next state =
+    PlaySound Audio.AcquireSword
+    |> eventHandler
     state
 
-let pickupShield next state =
-    Audio.shieldSound.Play()
+let pickupShield eventHandler next state =
+    PlaySound Audio.AcquireShield
+    |> eventHandler
     state
 
-let pickupPotion next state =
-    Audio.potionSound.Play()
+let pickupPotion eventHandler next state =
+    PlaySound Audio.AcquirePotion
+    |> eventHandler
     state
 
-let pickupHourglass next state =
-    Audio.hourglassSound.Play()
+let pickupHourglass eventHandler next state =
+    PlaySound Audio.AcquireHourglass
+    |> eventHandler
     {state with StartTime = TimeBonusPerHourglass |> state.StartTime.AddSeconds}
     
 
-let updateInventory next state =
+let updateInventory eventHandler next state =
     match state.Items |> Map.tryFind next with
-    | Some Treasure -> state |> pickupTreasure next
-    | Some Trap -> state |> pickupTrap next
-    | Some Key -> state |> pickupKey next
-    | Some Sword -> state |> pickupSword next
-    | Some Shield -> state |> pickupShield next
-    | Some Potion -> state |> pickupPotion next
-    | Some Hourglass -> state |> pickupHourglass next
+    | Some Treasure -> state |> pickupTreasure eventHandler next
+    | Some Trap -> state |> pickupTrap eventHandler next
+    | Some Key -> state |> pickupKey eventHandler next
+    | Some Sword -> state |> pickupSword eventHandler next
+    | Some Shield -> state |> pickupShield eventHandler next
+    | Some Potion -> state |> pickupPotion eventHandler next
+    | Some Hourglass -> state |> pickupHourglass eventHandler next
     | None -> state
 
     |> pickupItem next
 
-let updateState next explorer =
+let updateState eventHandler next explorer =
     explorer.State
     |> updateVisited next
     |> updateVisible ((next, explorer.Orientation, explorer.Maze) |> visibleLocations)
-    |> updateInventory next
+    |> updateInventory eventHandler next
 
 let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
     next
@@ -212,33 +224,35 @@ let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
 let canEnter next (explorer: Explorer<Cardinal.Direction, State>) =
     let canGo = next |> explorer.Maze.[explorer.Position].Contains
     let isLocked = explorer |> mustUnlock next
-    let hasKey = explorer.State.Keys > 0
+    let hasKey = explorer.State |> getCounter Keys |> (<=) 1
     canGo && if isLocked then hasKey else true
 
 
-let enterLocation next explorer =
+let enterLocation eventHandler next explorer =
     {explorer with 
         Position = next; 
-        State = explorer |> updateState next}
+        State = explorer |> updateState eventHandler next}
 
-let unlockLocation next explorer =
+let unlockLocation eventHandler next explorer =
+    PlaySound Audio.UnlockDoor
+    |> eventHandler
     {explorer with State = explorer.State |> updateLock next}
 
-let moveAction (explorer: Explorer<Cardinal.Direction, State>) = 
+let moveAction eventHandler (explorer: Explorer<Cardinal.Direction, State>) = 
     let next =
         explorer.Orientation
         |> Cardinal.walk explorer.Position
     if explorer |> canEnter next then
         if explorer |> mustUnlock next then
             explorer
-            |> unlockLocation next
+            |> unlockLocation eventHandler next
         else
             explorer
-            |> enterLocation next
+            |> enterLocation eventHandler next
     else
         explorer
 
-let turnAction direction explorer = 
+let turnAction eventHandler direction explorer = 
     {explorer with Orientation = direction; State={explorer.State with Visited = explorer.State.Visited |> Set.union explorer.State.Visible; Visible = visibleLocations(explorer.Position, direction, explorer.Maze)}}
 
 type Command = 
@@ -247,11 +261,11 @@ type Command =
      | Restart
      | Wait
 
-let act command explorer =
+let act (eventHandler:GameEvent->unit) command explorer =
     match command with
-    | Turn direction -> if (explorer |> getExplorerState) = Alive then explorer |> turnAction direction else explorer
-    | Move           -> if (explorer |> getExplorerState) = Alive then explorer |> moveAction else explorer
-    | Restart        -> restart()
+    | Turn direction -> if (explorer |> getExplorerState) = Alive then explorer |> turnAction eventHandler direction else explorer
+    | Move           -> if (explorer |> getExplorerState) = Alive then explorer |> moveAction eventHandler else explorer
+    | Restart        -> restart eventHandler
     | _              -> explorer
 
 let mutable explorer = 

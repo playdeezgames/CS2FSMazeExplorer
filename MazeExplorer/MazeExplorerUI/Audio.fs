@@ -1,9 +1,26 @@
 ﻿module Audio
 
-let lootSound = new System.Media.SoundPlayer("Loot.wav")
-let hourglassSound = new System.Media.SoundPlayer("Hourglass.wav")
-let keySound = new System.Media.SoundPlayer("Key.wav")
-let potionSound = new System.Media.SoundPlayer("Potion.wav")
-let shieldSound = new System.Media.SoundPlayer("Shield.wav")
-let swordSound = new System.Media.SoundPlayer("Sword.wav")
-let trapSound = new System.Media.SoundPlayer("Trap.wav")
+type Sfx =
+    | AcquireLoot
+    | AcquireHourglass
+    | AcquireKey
+    | AcquirePotion
+    | AcquireShield
+    | AcquireSword
+    | TriggerTrap
+    | UnlockDoor
+
+let soundPlayers =
+    [(AcquireLoot,"Loot.wav");
+    (AcquireHourglass,"Hourglass.wav");
+    (AcquireKey,"Key.wav");
+    (AcquirePotion,"Potion.wav");
+    (AcquireShield,"Shield.wav");
+    (AcquireSword,"Sword.wav");
+    (UnlockDoor,"Unlock.wav");
+    (TriggerTrap,"Trap.wav")]
+    |> Seq.map (fun (k,v) -> (k, new System.Media.SoundPlayer(v)))
+    |> Map.ofSeq
+
+let playSound sfx =
+    soundPlayers.[sfx].Play()
