@@ -5,10 +5,10 @@ let lock = RoomTiles.createCardinalLocks Colors.Transparent Colors.Onyx
 
 let explorer = ExplorerTiles.createCardinal Colors.Transparent Colors.Silver
 
-let garnetFont = FontTiles.create Colors.Onyx Colors.Garnet
-let goldFont = FontTiles.create Colors.Onyx Colors.Gold
-let sapphireFont = FontTiles.create Colors.Onyx Colors.Sapphire
-let emeraldFont = FontTiles.create Colors.Onyx Colors.Emerald
+let garnetFont = FontTiles.create Colors.Transparent Colors.Garnet
+let goldFont = FontTiles.create Colors.Transparent Colors.Gold
+let sapphireFont = FontTiles.create Colors.Transparent Colors.Sapphire
+let emeraldFont = FontTiles.create Colors.Transparent Colors.Emerald
 
 let Filled = new Tile.Tile(CommonPatterns.Filled, Colors.Transparent, Colors.Amethyst)
 let Empty = new Tile.Tile(CommonPatterns.Empty, Colors.Tin, Colors.Tin)

@@ -1,10 +1,12 @@
 ﻿module Renderer
 
+open GameData
+
 let redraw graphics =
     match GameData.gameState with
-    | GameData.TitleScreen                              -> graphics |> TitleScreenRenderer.redraw
-    | GameData.HelpScreen _                             -> graphics |> HelpScreenRenderer.redraw
-    | GameData.OptionsScreen _                          -> graphics |> OptionsScreenRenderer.redraw
-    | GameData.PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
-    | GameData.GameOverScreen (explorer, explorerState) -> explorer |> PlayScreenRenderer.drawGameScreen
+    | TitleScreen                              -> TitleScreenRenderer.drawTitleScreen()
+    | HelpScreen _                             -> HelpScreenRenderer.drawHelpScreen()
+    | OptionsScreen _                          -> OptionsScreenRenderer.drawOptionsScreen()
+    | PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
+    | GameOverScreen (explorer, explorerState) -> explorer |> PlayScreenRenderer.drawGameScreen
 

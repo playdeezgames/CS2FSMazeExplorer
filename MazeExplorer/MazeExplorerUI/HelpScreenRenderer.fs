@@ -11,8 +11,3 @@ let drawHelpScreen () =
     helpScreenStrings
     |> List.iter (fun (f,xy,s) -> f |> FrameBuffer.renderString xy s)
 
-let redraw graphics =
-    match gameState with
-    | HelpScreen pausedExplorer -> drawHelpScreen()
-    | _ -> ()
-

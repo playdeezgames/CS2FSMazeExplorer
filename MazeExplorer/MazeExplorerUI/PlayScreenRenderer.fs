@@ -131,7 +131,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     |> FrameBuffer.renderString (MazeColumns, 4) text
     let timeRemaining = explorer |> GameData.getTimeLeft
     if (explorer |> GameData.getExplorerState) = GameData.Alive then
-        let timeFont = 
+        let timeFont = //TODO: make active pattern!
             if timeRemaining >= GameData.TimeLimit / 2 then
                 Tiles.emeraldFont
             elif timeRemaining >= GameData.TimeLimit / 4 then
@@ -143,11 +143,6 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     else
         Tiles.garnetFont
         |> FrameBuffer.renderString (MazeColumns,5) "        "
-
-let redraw graphics =
-    match gameState with
-    | PlayScreen explorer -> explorer |> drawGameScreen
-    | _ -> ()
     
 
 

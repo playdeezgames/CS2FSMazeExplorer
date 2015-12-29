@@ -2,6 +2,11 @@
 
 open GameData
 
+// What are the options I want to set?
+// A) SFX toggle/volume?
+// B) Difficulty level?
+// C) Hardcore/No Pause mode
+
 let optionsScreenStrings =
     [(Tiles.emeraldFont,(0,0),"Options");
     (Tiles.emeraldFont,(0,2),"Esc - Go Back")]
