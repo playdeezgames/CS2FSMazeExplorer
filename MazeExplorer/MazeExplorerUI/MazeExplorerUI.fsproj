@@ -57,7 +57,9 @@
     <Compile Include="Utility.fs" />
     <Compile Include="Audio.fs" />
     <Compile Include="GameData.fs" />
+    <Compile Include="PlayRenderer.fs" />
     <Compile Include="Renderer.fs" />
+    <Compile Include="PlayInput.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />

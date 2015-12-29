@@ -8,7 +8,7 @@ let TileRows = 18
 let MazeColumns = 24
 let MazeRows = TileRows
 let InitialHealth = 3
-let TimeLimit = 3//00
+let TimeLimit = 300
 let TimeBonusPerHourglass = 60.
 
 type GameEvent =
@@ -32,21 +32,60 @@ type CounterType =
 
 let fixedItemList =
     [(LoveInterest,1);
+    (Hourglass,5);
     (Sword,4)]
     |> List.map (fun (k,v)-> [1..v] |> List.map (fun e-> k))
     |> List.reduce (@)
     |> Seq.ofList
 
-let variableItems =
+let variableItemGenerator =
     [(Treasure,30);
     (Trap,20);
     (Shield,5);
     (Potion,5);
-    (Hourglass,1);
     (Key,10)]
     |> WeightedGenerator.ofPairs
 
-let generateVariableItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) variableItems
+type State = 
+    {Visited: Set<Location>; 
+    Items: Map<Location,ItemType>; 
+    Locks: Set<Location>;
+    Visible: Set<Location>; 
+    Counters : Map<CounterType,int>;
+    EndTime: System.DateTime}
+
+type PausedExplorer<'direction,'state> = Explorer<'direction,'state> * System.DateTime
+
+type ExplorerState = 
+    | Win
+    | Alive
+    | Dead
+    | OutOfTime
+
+type GameState =
+    | TitleScreen
+    | HelpScreen of PausedExplorer<Cardinal.Direction, State> option
+    | OptionsScreen of PausedExplorer<Cardinal.Direction, State> option
+    | PlayScreen of Explorer<Cardinal.Direction, State>
+    | GameOver of Explorer<Cardinal.Direction, State> * ExplorerState
+
+let pauseExplorer explorer =
+    (explorer, System.DateTime.Now)
+
+let unpauseExplorer pausedExplorer = 
+    let explorer, pauseTime = pausedExplorer
+    {explorer with State = {explorer.State with EndTime = System.DateTime.Now + (explorer.State.EndTime - pauseTime)}}
+
+let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:Maze.Maze) =
+    let nextLocation = Cardinal.walk location direction
+    if maze.[location].Contains nextLocation then
+        visibleLocations (nextLocation, direction, maze)
+        |> Set.add location
+    else
+        [location]
+        |> Set.ofSeq
+
+let generateVariableItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) variableItemGenerator
 
 let generateItemList count =
     let fixedItems = 
@@ -58,23 +97,6 @@ let generateItemList count =
     fixedItems
     |> Seq.append variableItems
     |> Seq.sortBy (fun e->Utility.random.Next())
-
-type State = 
-    {Visited: Set<Location>; 
-    Items: Map<Location,ItemType>; 
-    Locks: Set<Location>;
-    Visible: Set<Location>; 
-    Counters : Map<CounterType,int>;
-    StartTime: System.DateTime}
-
-let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:Maze.Maze) =
-    let nextLocation = Cardinal.walk location direction
-    if maze.[location].Contains nextLocation then
-        visibleLocations (nextLocation, direction, maze)
-        |> Set.add location
-    else
-        [location]
-        |> Set.ofSeq
 
 let itemLocations (maze:Maze.Maze) =
     let locations = 
@@ -104,18 +126,12 @@ let isDead explorer =
     |> getCounter Health
     <= 0
 
-type ExplorerState = 
-    | Win
-    | Alive
-    | Dead
-    | OutOfTime
-
 let getTimeLeft explorer =
-    let elapsed = (System.DateTime.Now - explorer.State.StartTime).TotalSeconds |> int
-    if elapsed >= TimeLimit then
+    let timeRemaining = (explorer.State.EndTime - System.DateTime.Now).TotalSeconds |> int
+    if timeRemaining < 0 then
         0
     else
-        TimeLimit - elapsed
+        timeRemaining
 
 let getExplorerState explorer = 
     if explorer |> isDead then
@@ -157,7 +173,7 @@ let restart eventHandler :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker Utility.findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; StartTime=System.DateTime.Now} |> initializeCounters)
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations newExplorer.Maze;
@@ -217,8 +233,7 @@ let pickupPotion eventHandler next state =
 let pickupHourglass eventHandler next state =
     PlaySound Audio.AcquireHourglass
     |> eventHandler
-    {state with StartTime = TimeBonusPerHourglass |> state.StartTime.AddSeconds}
-    
+    {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
 
 let updateInventory eventHandler next state =
     match state.Items |> Map.tryFind next with
@@ -249,7 +264,6 @@ let canEnter next (explorer: Explorer<Cardinal.Direction, State>) =
     let isLocked = explorer |> mustUnlock next
     let hasKey = explorer.State |> getCounter Keys > 0
     canGo && if isLocked then hasKey else true
-
 
 let enterLocation eventHandler next explorer =
     {explorer with 
@@ -291,6 +305,4 @@ let act (eventHandler:GameEvent->unit) command explorer =
     | Restart        -> restart eventHandler
     | _              -> explorer
 
-let mutable explorer = 
-    restart()
-
+let mutable gameState = PlayScreen (restart())
