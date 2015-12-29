@@ -11,8 +11,18 @@ let InitialHealth = 3
 let TimeLimit = 300
 let TimeBonusPerHourglass = 60.
 
+type Sfx =
+    | AcquireLoot
+    | AcquireHourglass
+    | AcquireKey
+    | AcquirePotion
+    | AcquireShield
+    | AcquireSword
+    | TriggerTrap
+    | UnlockDoor
+
 type GameEvent =
-    | PlaySound of Audio.Sfx
+    | PlaySound of Sfx
 
 type ItemType = 
     | Treasure
@@ -67,7 +77,7 @@ type GameState =
     | HelpScreen of PausedExplorer<Cardinal.Direction, State> option
     | OptionsScreen of PausedExplorer<Cardinal.Direction, State> option
     | PlayScreen of Explorer<Cardinal.Direction, State>
-    | GameOver of Explorer<Cardinal.Direction, State> * ExplorerState
+    | GameOverScreen of Explorer<Cardinal.Direction, State> * ExplorerState
 
 let pauseExplorer explorer =
     (explorer, System.DateTime.Now)
@@ -198,40 +208,40 @@ let pickupItem next state =
     {state with Items = next |> state.Items.Remove}
 
 let pickupTreasure eventHandler next state =
-    PlaySound Audio.AcquireLoot
+    PlaySound AcquireLoot
     |> eventHandler
     state
     |> changeCounter Loot 1
 
 let pickupTrap eventHandler next state =
-    PlaySound Audio.TriggerTrap
+    PlaySound TriggerTrap
     |> eventHandler
     state
     |> changeCounter Health -1
 
 let pickupKey eventHandler next state =
-    PlaySound Audio.AcquireKey
+    PlaySound AcquireKey
     |> eventHandler
     state
     |> changeCounter Keys 1
 
 let pickupSword eventHandler next state =
-    PlaySound Audio.AcquireSword
+    PlaySound AcquireSword
     |> eventHandler
     state
 
 let pickupShield eventHandler next state =
-    PlaySound Audio.AcquireShield
+    PlaySound AcquireShield
     |> eventHandler
     state
 
 let pickupPotion eventHandler next state =
-    PlaySound Audio.AcquirePotion
+    PlaySound AcquirePotion
     |> eventHandler
     state
 
 let pickupHourglass eventHandler next state =
-    PlaySound Audio.AcquireHourglass
+    PlaySound AcquireHourglass
     |> eventHandler
     {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
 
@@ -271,7 +281,7 @@ let enterLocation eventHandler next explorer =
         State = explorer |> updateState eventHandler next}
 
 let unlockLocation eventHandler next explorer =
-    PlaySound Audio.UnlockDoor
+    PlaySound UnlockDoor
     |> eventHandler
     {explorer with State = explorer.State |> updateLock next}
 
@@ -305,4 +315,4 @@ let act (eventHandler:GameEvent->unit) command explorer =
     | Restart        -> restart eventHandler
     | _              -> explorer
 
-let mutable gameState = PlayScreen (restart())
+let mutable gameState = TitleScreen

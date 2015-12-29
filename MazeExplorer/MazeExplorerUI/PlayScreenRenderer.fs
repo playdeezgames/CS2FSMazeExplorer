@@ -1,4 +1,4 @@
-﻿module PlayRenderer
+﻿module PlayScreenRenderer
 
 open Location
 open GameData
@@ -102,47 +102,51 @@ let statusTable =
      (GameData.OutOfTime, (Tiles.garnetFont,  "Times Up"))]
     |> Map.ofSeq
 
+let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
+    Colors.Onyx
+    |> FrameBuffer.clear
+    explorer.Maze
+    |> Map.iter(fun k v -> renderRoom k v 
+                                (k |> explorer.State.Visited.Contains) //visited
+                                (k |> explorer.State.Visible.Contains) //visible
+                                (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
+                                (k |> explorer.State.Locks.Contains) //locked
+                                (explorer |> getExplorerState = Alive |> not)) //game over
+    Tiles.explorer.[explorer.Orientation]
+    |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
+    Tiles.sapphireFont
+    |> FrameBuffer.renderString (MazeColumns,0) (explorer.State.Visited |> Set.count |> sprintf "Room %3i")
+    Tiles.goldFont
+    |> FrameBuffer.renderString (MazeColumns,1) (explorer.State |> getCounter Loot |> sprintf "Loot %3i" )
+    Tiles.garnetFont
+    |> FrameBuffer.renderString (MazeColumns,2) (explorer.State |> getCounter Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
+    Tiles.sapphireFont
+    |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
+    Tiles.sapphireFont
+    |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
+    Tiles.goldFont
+    |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
+    let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
+    font
+    |> FrameBuffer.renderString (MazeColumns, 4) text
+    let timeRemaining = explorer |> GameData.getTimeLeft
+    if (explorer |> GameData.getExplorerState) = GameData.Alive then
+        let timeFont = 
+            if timeRemaining >= GameData.TimeLimit / 2 then
+                Tiles.emeraldFont
+            elif timeRemaining >= GameData.TimeLimit / 4 then
+                Tiles.goldFont
+            else
+                Tiles.garnetFont
+        timeFont
+        |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
+    else
+        Tiles.garnetFont
+        |> FrameBuffer.renderString (MazeColumns,5) "        "
+
 let redraw graphics =
     match gameState with
-    | PlayScreen explorer ->
-        explorer.Maze
-        |> Map.iter(fun k v -> renderRoom k v 
-                                    (k |> explorer.State.Visited.Contains) //visited
-                                    (k |> explorer.State.Visible.Contains) //visible
-                                    (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
-                                    (k |> explorer.State.Locks.Contains) //locked
-                                    (explorer |> getExplorerState = Alive |> not)) //game over
-        Tiles.explorer.[explorer.Orientation]
-        |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
-        Tiles.sapphireFont
-        |> FrameBuffer.renderString (MazeColumns,0) (explorer.State.Visited |> Set.count |> sprintf "Room %3i")
-        Tiles.goldFont
-        |> FrameBuffer.renderString (MazeColumns,1) (explorer.State |> getCounter Loot |> sprintf "Loot %3i" )
-        Tiles.garnetFont
-        |> FrameBuffer.renderString (MazeColumns,2) (explorer.State |> getCounter Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
-        Tiles.sapphireFont
-        |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
-        Tiles.sapphireFont
-        |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
-        Tiles.goldFont
-        |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
-        let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
-        font
-        |> FrameBuffer.renderString (MazeColumns, 4) text
-        let timeRemaining = explorer |> GameData.getTimeLeft
-        if (explorer |> GameData.getExplorerState) = GameData.Alive then
-            let timeFont = 
-                if timeRemaining >= GameData.TimeLimit / 2 then
-                    Tiles.emeraldFont
-                elif timeRemaining >= GameData.TimeLimit / 4 then
-                    Tiles.goldFont
-                else
-                    Tiles.garnetFont
-            timeFont
-            |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
-        else
-            Tiles.garnetFont
-            |> FrameBuffer.renderString (MazeColumns,5) "        "
+    | PlayScreen explorer -> explorer |> drawGameScreen
     | _ -> ()
     
 

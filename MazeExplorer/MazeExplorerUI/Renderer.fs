@@ -2,9 +2,9 @@
 
 let redraw graphics =
     match GameData.gameState with
-    | GameData.TitleScreen -> ()
-    | GameData.HelpScreen pausedExplorer -> ()
-    | GameData.OptionsScreen pausedExplorer -> ()
-    | GameData.PlayScreen explorer -> graphics |> PlayRenderer.redraw
-    | GameData.GameOver (explorer, explorerState) -> ()
+    | GameData.TitleScreen                              -> graphics |> TitleScreenRenderer.redraw
+    | GameData.HelpScreen _                             -> graphics |> HelpScreenRenderer.redraw
+    | GameData.OptionsScreen _                          -> graphics |> OptionsScreenRenderer.redraw
+    | GameData.PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
+    | GameData.GameOverScreen (explorer, explorerState) -> explorer |> PlayScreenRenderer.drawGameScreen
 

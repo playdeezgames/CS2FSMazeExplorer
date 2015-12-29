@@ -1,4 +1,4 @@
-﻿module PlayInput
+﻿module PlayScreenInput
 
 open GameData
 open System.Windows.Forms
@@ -21,7 +21,7 @@ let keyDown (event:KeyEventArgs) =
             match command with
             | Wait -> false
             | _ -> 
-                    gameState <- PlayScreen (explorer |> act PlayRenderer.handleGameEvent command)
+                    gameState <- PlayScreen (explorer |> act PlayScreenRenderer.handleGameEvent command)
                     true
     | _ -> false
 

@@ -1,24 +1,14 @@
 ﻿module Audio
 
-type Sfx =
-    | AcquireLoot
-    | AcquireHourglass
-    | AcquireKey
-    | AcquirePotion
-    | AcquireShield
-    | AcquireSword
-    | TriggerTrap
-    | UnlockDoor
-
 let soundPlayers =
-    [(AcquireLoot,"Loot.wav");
-    (AcquireHourglass,"Hourglass.wav");
-    (AcquireKey,"Key.wav");
-    (AcquirePotion,"Potion.wav");
-    (AcquireShield,"Shield.wav");
-    (AcquireSword,"Sword.wav");
-    (UnlockDoor,"Unlock.wav");
-    (TriggerTrap,"Trap.wav")]
+    [(GameData.AcquireLoot,"Loot.wav");
+    (GameData.AcquireHourglass,"Hourglass.wav");
+    (GameData.AcquireKey,"Key.wav");
+    (GameData.AcquirePotion,"Potion.wav");
+    (GameData.AcquireShield,"Shield.wav");
+    (GameData.AcquireSword,"Sword.wav");
+    (GameData.UnlockDoor,"Unlock.wav");
+    (GameData.TriggerTrap,"Trap.wav")]
     |> Seq.map (fun (k,v) -> (k, new System.Media.SoundPlayer(v)))
     |> Map.ofSeq
 

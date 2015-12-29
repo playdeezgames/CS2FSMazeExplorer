@@ -6,7 +6,7 @@ let createRefreshTimer (window:Form) =
     let timer = new Timer()
     timer.Interval <- 1000
     timer.Enabled <- true
-    timer.Tick.AddHandler (fun _ _ -> window.Invalidate())
+    timer.Tick.AddHandler (fun _ _ -> match GameData.gameState with | GameData.PlayScreen _ -> window.Invalidate() | _ -> ())
     window
 
 [<EntryPoint>]

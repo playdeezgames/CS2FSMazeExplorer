@@ -53,13 +53,21 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Tiles.fs" />
     <Compile Include="Utility.fs" />
-    <Compile Include="Audio.fs" />
     <Compile Include="GameData.fs" />
-    <Compile Include="PlayRenderer.fs" />
+    <Compile Include="Tiles.fs" />
+    <Compile Include="Audio.fs" />
+    <Compile Include="TitleScreenRenderer.fs" />
+    <Compile Include="TitleScreenInput.fs" />
+    <Compile Include="HelpScreenRenderer.fs" />
+    <Compile Include="HelpScreenInput.fs" />
+    <Compile Include="OptionsScreenRenderer.fs" />
+    <Compile Include="OptionsScreenInput.fs" />
+    <Compile Include="PlayScreenRenderer.fs" />
+    <Compile Include="PlayScreenInput.fs" />
+    <Compile Include="GameOverScreenRenderer.fs" />
+    <Compile Include="GameOverScreenInput.fs" />
     <Compile Include="Renderer.fs" />
-    <Compile Include="PlayInput.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
