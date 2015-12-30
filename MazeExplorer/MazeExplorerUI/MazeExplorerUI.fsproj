@@ -55,8 +55,10 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Utility.fs" />
     <Compile Include="GameData.fs" />
+    <Compile Include="GameSettings.fs" />
     <Compile Include="Tiles.fs" />
     <Compile Include="Audio.fs" />
+    <Compile Include="GameEvents.fs" />
     <Compile Include="TitleScreenRenderer.fs" />
     <Compile Include="TitleScreenInput.fs" />
     <Compile Include="HelpScreenRenderer.fs" />
@@ -67,6 +69,8 @@
     <Compile Include="PlayScreenInput.fs" />
     <Compile Include="GameOverScreenRenderer.fs" />
     <Compile Include="GameOverScreenInput.fs" />
+    <Compile Include="PauseScreenRenderer.fs" />
+    <Compile Include="PauseScreenInput.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="Program.fs" />

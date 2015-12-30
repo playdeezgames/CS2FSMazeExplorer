@@ -5,10 +5,24 @@ let lock = RoomTiles.createCardinalLocks Colors.Transparent Colors.Onyx
 
 let explorer = ExplorerTiles.createCardinal Colors.Transparent Colors.Silver
 
-let garnetFont = FontTiles.create Colors.Transparent Colors.Garnet
-let goldFont = FontTiles.create Colors.Transparent Colors.Gold
-let sapphireFont = FontTiles.create Colors.Transparent Colors.Sapphire
-let emeraldFont = FontTiles.create Colors.Transparent Colors.Emerald
+let fonts =
+    [Colors.Amethyst;
+    Colors.Aquamarine;
+    Colors.Carnelian;
+    Colors.Copper;
+    Colors.Emerald;
+    Colors.Garnet;
+    Colors.Gold;
+    Colors.Jade;
+    Colors.LapisLazuli;
+    Colors.Onyx;
+    Colors.Sapphire;
+    Colors.Silver;
+    Colors.Tanzanite;
+    Colors.Tin;
+    Colors.Turquoise]
+    |> Seq.map (fun c-> (c, c|> FontTiles.create Colors.Transparent))
+    |> Map.ofSeq
 
 let Filled = new Tile.Tile(CommonPatterns.Filled, Colors.Transparent, Colors.Amethyst)
 let Empty = new Tile.Tile(CommonPatterns.Empty, Colors.Tin, Colors.Tin)

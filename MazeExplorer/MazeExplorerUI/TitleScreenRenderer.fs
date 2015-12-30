@@ -3,10 +3,10 @@
 open GameData
 
 let titleScreenStrings =
-    [(Tiles.sapphireFont,(9,4),"Maze  Explorer");
-    (Tiles.garnetFont,(9,15),"F1 - Help    ");
-    (Tiles.garnetFont,(9,16),"F2 - New Game");
-    (Tiles.garnetFont,(9,17),"F3 - Options ")]
+    [(Tiles.fonts.[Colors.Sapphire],(9,4),"Maze  Explorer");
+    (Tiles.fonts.[Colors.Garnet],(9,15),"F1 - Help    ");
+    (Tiles.fonts.[Colors.Garnet],(9,16),"F2 - New Game");
+    (Tiles.fonts.[Colors.Garnet],(9,17),"F3 - Options ")]
 
 let titleScreenTiles =
     [(Tiles.Empty,(0,0));

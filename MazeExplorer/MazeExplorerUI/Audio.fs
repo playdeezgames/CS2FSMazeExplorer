@@ -15,4 +15,7 @@ let soundPlayers =
     |> Map.ofSeq
 
 let playSound sfx =
-    soundPlayers.[sfx].Play()
+    if GameSettings.options.Sfx then
+        soundPlayers.[sfx].Play()
+    else
+        ()

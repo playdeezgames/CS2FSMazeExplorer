@@ -3,10 +3,6 @@
 open Location
 open GameData
 
-let handleGameEvent (event:GameData.GameEvent) =
-    match event with
-    | PlaySound sfx -> Audio.playSound sfx
-
 let determineLockTile (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
     Tiles.lock |> Map.tryFind flags
@@ -96,10 +92,10 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         
 let statusTable = 
-    [(GameData.Alive,     (Tiles.emeraldFont, "Alive!  "));
-     (GameData.Dead,      (Tiles.garnetFont,  "Dead!   "));
-     (GameData.Win,       (Tiles.goldFont,    "Win!    "));
-     (GameData.OutOfTime, (Tiles.garnetFont,  "Times Up"))]
+    [(GameData.Alive,     (Tiles.fonts.[Colors.Emerald], "Alive!  "));
+     (GameData.Dead,      (Tiles.fonts.[Colors.Garnet],  "Dead!   "));
+     (GameData.Win,       (Tiles.fonts.[Colors.Gold],    "Win!    "));
+     (GameData.OutOfTime, (Tiles.fonts.[Colors.Garnet],  "Times Up"))]
     |> Map.ofSeq
 
 let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
@@ -114,17 +110,17 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
                                 (explorer |> getExplorerState = Alive |> not)) //game over
     Tiles.explorer.[explorer.Orientation]
     |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
-    Tiles.sapphireFont
+    Tiles.fonts.[Colors.Sapphire]
     |> FrameBuffer.renderString (MazeColumns,0) (explorer.State.Visited |> Set.count |> sprintf "Room %3i")
-    Tiles.goldFont
+    Tiles.fonts.[Colors.Gold]
     |> FrameBuffer.renderString (MazeColumns,1) (explorer.State |> getCounter Loot |> sprintf "Loot %3i" )
-    Tiles.garnetFont
+    Tiles.fonts.[Colors.Garnet]
     |> FrameBuffer.renderString (MazeColumns,2) (explorer.State |> getCounter Health |> sprintf "\u0003\u0003\u0003\u0003 %3i")
-    Tiles.sapphireFont
+    Tiles.fonts.[Colors.Sapphire]
     |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
-    Tiles.sapphireFont
+    Tiles.fonts.[Colors.Sapphire]
     |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
-    Tiles.goldFont
+    Tiles.fonts.[Colors.Gold]
     |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
     let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
     font
@@ -133,15 +129,15 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     if (explorer |> GameData.getExplorerState) = GameData.Alive then
         let timeFont = //TODO: make active pattern!
             if timeRemaining >= GameData.TimeLimit / 2 then
-                Tiles.emeraldFont
+                Tiles.fonts.[Colors.Emerald]
             elif timeRemaining >= GameData.TimeLimit / 4 then
-                Tiles.goldFont
+                Tiles.fonts.[Colors.Gold]
             else
-                Tiles.garnetFont
+                Tiles.fonts.[Colors.Garnet]
         timeFont
         |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
     else
-        Tiles.garnetFont
+        Tiles.fonts.[Colors.Garnet]
         |> FrameBuffer.renderString (MazeColumns,5) "        "
     
 

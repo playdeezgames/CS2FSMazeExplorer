@@ -11,6 +11,21 @@ let InitialHealth = 3
 let TimeLimit = 300
 let TimeBonusPerHourglass = 60.
 
+type DifficultyLevel = 
+    | Easy
+    | Normal
+    | Hard
+
+type DifficultySettings =
+    { Hourglasses: int;
+    Swords:int}
+
+let difficultySettings =
+    [Easy,{Hourglasses=6;Swords=5};
+    Normal,{Hourglasses=5;Swords=4};
+    Hard,{Hourglasses=4;Swords=3}]
+    |> Map.ofSeq
+
 type Sfx =
     | AcquireLoot
     | AcquireHourglass
@@ -40,10 +55,12 @@ type CounterType =
     | Keys
     | Potions
 
-let fixedItemList =
+let fixedItemList difficultyLevel =
+    let difficultySetting =
+        difficultySettings.[difficultyLevel]
     [(LoveInterest,1);
-    (Hourglass,5);
-    (Sword,4)]
+    (Hourglass, difficultySetting.Hourglasses);
+    (Sword, difficultySetting.Swords)]
     |> List.map (fun (k,v)-> [1..v] |> List.map (fun e-> k))
     |> List.reduce (@)
     |> Seq.ofList
@@ -78,6 +95,7 @@ type GameState =
     | OptionsScreen of PausedExplorer<Cardinal.Direction, State> option
     | PlayScreen of Explorer<Cardinal.Direction, State>
     | GameOverScreen of Explorer<Cardinal.Direction, State> * ExplorerState
+    | PauseScreen of PausedExplorer<Cardinal.Direction, State>
 
 let pauseExplorer explorer =
     (explorer, System.DateTime.Now)
@@ -97,9 +115,10 @@ let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:
 
 let generateVariableItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) variableItemGenerator
 
-let generateItemList count =
+let generateItemList difficultyLevel count =
     let fixedItems = 
-        fixedItemList
+        difficultyLevel
+        |> fixedItemList
         |> Seq.truncate count
     let variableItems =
         [1..count - (fixedItems |> Seq.length)]
@@ -108,13 +127,13 @@ let generateItemList count =
     |> Seq.append variableItems
     |> Seq.sortBy (fun e->Utility.random.Next())
 
-let itemLocations (maze:Maze.Maze) =
+let itemLocations difficultyLevel (maze:Maze.Maze) =
     let locations = 
         maze
         |> Map.toSeq
         |> Seq.filter (fun (location, exits) -> (exits |> Set.count) = 1)
         |> Seq.map (fun (k,v)->k)
-    generateItemList (locations |> Seq.length)
+    generateItemList difficultyLevel (locations |> Seq.length)
     |> Seq.zip locations
     |> Map.ofSeq
 
@@ -176,7 +195,7 @@ let initializeCounters state =
     state
     |> setCounter Health InitialHealth
 
-let restart eventHandler :Explorer<Cardinal.Direction, State>= 
+let restart difficultyLevel eventHandler :Explorer<Cardinal.Direction, State>= 
     let gridLocations = 
         Utility.makeGrid (MazeColumns, MazeRows)
     let newExplorer = 
@@ -186,7 +205,7 @@ let restart eventHandler :Explorer<Cardinal.Direction, State>=
         |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
-                    Items = itemLocations newExplorer.Maze;
+                    Items = itemLocations  difficultyLevel newExplorer.Maze;
                     Visible = visibleLocations (newExplorer.Position, newExplorer.Orientation, newExplorer.Maze); 
                     Visited = [newExplorer.Position] |> Set.ofSeq}}
     |> addLocks Utility.pickMultiple
@@ -307,12 +326,13 @@ type Command =
      | Move
      | Restart
      | Wait
+     | Pause
 
-let act (eventHandler:GameEvent->unit) command explorer =
+let act difficultyLevel (eventHandler:GameEvent->unit) command explorer =
     match command with
     | Turn direction -> if (explorer |> getExplorerState) = Alive then explorer |> turnAction eventHandler direction else explorer
     | Move           -> if (explorer |> getExplorerState) = Alive then explorer |> moveAction eventHandler else explorer
-    | Restart        -> restart eventHandler
+    | Restart        -> restart difficultyLevel eventHandler
     | _              -> explorer
 
 let mutable gameState = TitleScreen

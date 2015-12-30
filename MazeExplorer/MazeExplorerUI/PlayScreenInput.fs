@@ -2,6 +2,7 @@
 
 open GameData
 open System.Windows.Forms
+open Explorer
 
 let keyCodeToCommand direction keyCode = 
     match keyCode with
@@ -10,19 +11,21 @@ let keyCodeToCommand direction keyCode =
     | Keys.Down  -> if direction = Cardinal.South then Move else Turn Cardinal.South
     | Keys.Left  -> if direction = Cardinal.West  then Move else Turn Cardinal.West
     | Keys.R     -> Restart
+    | Keys.Space -> if GameSettings.options.PauseAllowed then Pause else Wait
     | _          -> Wait
 
-let keyDown (event:KeyEventArgs) =
-    match gameState with
-    | PlayScreen explorer ->
-            let command = 
-                event.KeyCode
-                |> keyCodeToCommand explorer.Orientation
-            match command with
-            | Wait -> false
-            | _ -> 
-                    gameState <- PlayScreen (explorer |> act PlayScreenRenderer.handleGameEvent command)
-                    true
-    | _ -> false
+let handlePlayScreenInput keyCode explorer=
+    let command = 
+        keyCode
+        |> keyCodeToCommand explorer.Orientation
+    match command with
+    | Wait -> 
+            false
+    | Pause -> 
+            gameState <- explorer |> pauseExplorer |> PauseScreen
+            true
+    | _ -> 
+            gameState <- explorer |> act GameSettings.options.DifficultyLevel GameEvents.handle command |> PlayScreen
+            true
 
 

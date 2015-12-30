@@ -3,8 +3,8 @@
 open GameData
 
 let helpScreenStrings =
-    [(Tiles.emeraldFont,(0,0),"Help");
-    (Tiles.emeraldFont,(0,2),"Esc - Go Back")]
+    [(Tiles.fonts.[Colors.Emerald],(0,0),"Help");
+    (Tiles.fonts.[Colors.Emerald],(0,2),"Esc - Go Back")]
 
 let drawHelpScreen () =
     FrameBuffer.clear Colors.Onyx

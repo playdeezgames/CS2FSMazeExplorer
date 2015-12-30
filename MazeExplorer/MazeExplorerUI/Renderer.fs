@@ -3,10 +3,11 @@
 open GameData
 
 let redraw graphics =
-    match GameData.gameState with
+    match gameState with
     | TitleScreen                              -> TitleScreenRenderer.drawTitleScreen()
     | HelpScreen _                             -> HelpScreenRenderer.drawHelpScreen()
-    | OptionsScreen _                          -> OptionsScreenRenderer.drawOptionsScreen()
+    | OptionsScreen _                          -> GameSettings.options |> OptionsScreenRenderer.drawOptionsScreen
     | PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
     | GameOverScreen (explorer, explorerState) -> explorer |> PlayScreenRenderer.drawGameScreen
+    | PauseScreen _                            -> PauseScreenRenderer.drawPauseScreen()
 
