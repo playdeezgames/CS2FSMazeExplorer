@@ -1,28 +1,42 @@
 ﻿module OptionsScreenRenderer
 
 open GameData
+open GameSettings
 
-// What are the options I want to set?
-// A) SFX toggle/volume?
-// B) Difficulty level?
-// C) Hardcore/No Pause mode
+let always options =
+    true
+
+let isSfx value options=
+    options.Sfx = value
+
+let isPauseAllowed value options=
+    options.PauseAllowed = value
+
+let isDifficultyLevel value options =
+    options.DifficultyLevel = value
 
 let optionsScreenStrings=
-    [((fun (o:GameSettings.Options) -> true                 ), Tiles.fonts.[Colors.Silver], (0, 0 ), "Options");
-     ((fun (o:GameSettings.Options) -> o.Sfx                ), Tiles.fonts.[Colors.Emerald], (0, 2 ), "Sounds: ON");
-     ((fun (o:GameSettings.Options) -> o.Sfx |> not         ), Tiles.fonts.[Colors.Garnet], (0, 2 ), "Sounds: OFF");
-     ((fun (o:GameSettings.Options) -> o.Sfx                ), Tiles.fonts.[Colors.Tin], (0, 3 ), "[M]ute sounds");
-     ((fun (o:GameSettings.Options) -> o.Sfx |> not         ), Tiles.fonts.[Colors.Tin], (0, 3 ), "Un[m]ute sounds");
-     ((fun (o:GameSettings.Options) -> o.PauseAllowed       ), Tiles.fonts.[Colors.Emerald], (0, 5 ), "Pause Game: ON");
-     ((fun (o:GameSettings.Options) -> o.PauseAllowed |> not), Tiles.fonts.[Colors.Garnet], (0, 5 ), "Pause Game: OFF");
-     ((fun (o:GameSettings.Options) -> o.PauseAllowed       ), Tiles.fonts.[Colors.Tin], (0, 6 ), "Disallow [P]ause");
-     ((fun (o:GameSettings.Options) -> o.PauseAllowed |> not), Tiles.fonts.[Colors.Tin], (0, 6 ), "Allow [P]ause");
-     ((fun (o:GameSettings.Options) -> true                 ), Tiles.fonts.[Colors.Gold], (0, 17), "Esc - Go Back")]
+    [(always              , Colors.Silver , (0, 0 ), "Options");
+     (isSfx true          , Colors.Emerald, (0, 2 ), "Sounds: ON");
+     (isSfx false         , Colors.Garnet , (0, 2 ), "Sounds: OFF");
+     (isSfx true          , Colors.Tin    , (0, 3 ), "[M]ute sounds");
+     (isSfx false         , Colors.Tin    , (0, 3 ), "Un[m]ute sounds");
+     (isPauseAllowed true , Colors.Emerald, (0, 5 ), "Pause Game: ON");
+     (isPauseAllowed false, Colors.Garnet , (0, 5 ), "Pause Game: OFF");
+     (isPauseAllowed true , Colors.Tin    , (0, 6 ), "Disallow [P]ause");
+     (isPauseAllowed false, Colors.Tin    , (0, 6 ), "Allow [P]ause");
+     (isDifficultyLevel Easy, Colors.Emerald    , (0, 8 ), "Difficulty: Easy");
+     (isDifficultyLevel Normal, Colors.Gold    , (0, 8 ), "Difficulty: Normal");
+     (isDifficultyLevel Hard, Colors.Garnet    , (0, 8 ), "Difficulty: Hard");
+     (always, Colors.Tin    , (0, 9 ), "[\u0018\u0019\u001B\u001A] Change Difficulty");
+     (always, Colors.Copper    , (0, 10 ), "(Difficulty changes will not")
+     (always, Colors.Copper    , (0, 11 ), "affect games in progress)");
+     (always              , Colors.Aquamarine   , (0, 17), "Esc - Go Back")]
 
 let drawOptionsScreen options =
     FrameBuffer.clear Colors.Onyx
     optionsScreenStrings
-    |> List.iter (fun (cond,f,xy,s) -> if cond(options) then f |> FrameBuffer.renderString xy s else ())
+    |> List.iter (fun (cond,c,xy,s) -> if cond(options) then Tiles.fonts.[c] |> FrameBuffer.renderString xy s else ())
 
 
 

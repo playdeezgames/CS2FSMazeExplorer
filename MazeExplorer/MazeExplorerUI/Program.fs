@@ -9,10 +9,12 @@ let createRefreshTimer (window:Form) =
     timer.Tick.AddHandler (fun _ _ -> match GameData.gameState with | GameData.PlayScreen _ -> window.Invalidate() | _ -> ())
     window
 
+let gameIcon = new Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("icon.ico"));
+
 [<EntryPoint>]
 [<STAThread>]
 let main argv = 
     new Size(768, 432)
-    |> GameWindow.create "Maze Explorer" (createRefreshTimer) Renderer.redraw Input.keyDown
+    |> GameWindow.create gameIcon "Maze Explorer" (createRefreshTimer) Renderer.redraw Input.keyDown
     |> Application.Run
     0

@@ -16,8 +16,8 @@ let renderFrameBuffer (window:Form) (g: Graphics) =
     g.DrawImage(FrameBuffer.FrameBuffer, new Rectangle(xOffset,yOffset,aspectRatio * FrameBuffer.BoardSize.Width,aspectRatio * FrameBuffer.BoardSize.Height))
 
 
-let create caption (postCreate: Form->Form) redrawCallback keydownCallback  initialWindowSize= 
-    let window = new Form(ClientSize=initialWindowSize, Text=caption)
+let create icon caption (postCreate: Form->Form) redrawCallback keydownCallback  initialWindowSize= 
+    let window = new Form(ClientSize=initialWindowSize, Text=caption, Icon=icon)
     window.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance ||| BindingFlags.NonPublic).SetValue(window,true,null)
     window.Paint.AddHandler (fun _ e -> 
                                         FrameBuffer.FrameBuffer
