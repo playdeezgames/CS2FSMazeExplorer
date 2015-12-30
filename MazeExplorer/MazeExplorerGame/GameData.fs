@@ -324,15 +324,16 @@ let turnAction eventHandler direction explorer =
 type Command = 
      | Turn of Cardinal.Direction
      | Move
-     | Restart
+     | Quit
      | Wait
      | Pause
+     | Help
+     | Options
 
 let act difficultyLevel (eventHandler:GameEvent->unit) command explorer =
     match command with
     | Turn direction -> if (explorer |> getExplorerState) = Alive then explorer |> turnAction eventHandler direction else explorer
     | Move           -> if (explorer |> getExplorerState) = Alive then explorer |> moveAction eventHandler else explorer
-    | Restart        -> restart difficultyLevel eventHandler
     | _              -> explorer
 
 let mutable gameState = TitleScreen

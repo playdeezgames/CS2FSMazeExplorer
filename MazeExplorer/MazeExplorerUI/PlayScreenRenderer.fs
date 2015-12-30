@@ -119,7 +119,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     Tiles.fonts.[Colors.Sapphire]
     |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
     Tiles.fonts.[Colors.Sapphire]
-    |> FrameBuffer.renderString (MazeColumns,17) "[R]eset"
+    |> FrameBuffer.renderString (MazeColumns,17) "[Q]uit"
     Tiles.fonts.[Colors.Gold]
     |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
     let (font, text) = statusTable.[explorer |> GameData.getExplorerState]

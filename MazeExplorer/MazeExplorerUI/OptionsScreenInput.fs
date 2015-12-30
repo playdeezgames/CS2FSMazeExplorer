@@ -30,6 +30,6 @@ let handleOptionsScreenInput keyCode =
             GameSettings.options <- {GameSettings.options with PauseAllowed=GameSettings.options.PauseAllowed |> not}
             true
     | Keys.Escape ->
-            GameData.gameState <- TitleScreen
+            GameData.gameState <- GameData.gameState |> GameEvents.restorePreviousGameState 
             true
     | _ -> false
