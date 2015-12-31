@@ -1,12 +1,13 @@
 ﻿open System.Windows.Forms
 open System.Drawing
 open System
+open GameState
 
 let createRefreshTimer (window:Form) =
     let timer = new Timer()
     timer.Interval <- 1000
     timer.Enabled <- true
-    timer.Tick.AddHandler (fun _ _ -> match GameData.gameState with | GameData.PlayScreen _ -> window.Invalidate() | _ -> ())
+    timer.Tick.AddHandler (fun _ _ -> match gameState with | PlayScreen _ -> window.Invalidate() | _ -> ())
     window
 
 let gameIcon = new Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("icon.ico"));

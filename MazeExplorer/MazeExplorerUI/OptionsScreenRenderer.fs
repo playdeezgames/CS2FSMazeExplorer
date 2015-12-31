@@ -2,6 +2,7 @@
 
 open GameData
 open GameSettings
+open Difficulty
 
 let always options =
     true

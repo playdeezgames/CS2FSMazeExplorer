@@ -1,6 +1,6 @@
 ﻿module GameSettings
 
-open GameData
+open Difficulty
 
 type Options =
     {Sfx:bool;

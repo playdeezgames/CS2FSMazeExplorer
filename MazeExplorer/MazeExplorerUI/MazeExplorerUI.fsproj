@@ -53,6 +53,8 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="PausedExplorer.fs" />
+    <Compile Include="GameState.fs" />
     <Compile Include="GameSettings.fs" />
     <Compile Include="Tiles.fs" />
     <Compile Include="Audio.fs" />
@@ -65,8 +67,6 @@
     <Compile Include="OptionsScreenInput.fs" />
     <Compile Include="PlayScreenRenderer.fs" />
     <Compile Include="PlayScreenInput.fs" />
-    <Compile Include="GameOverScreenRenderer.fs" />
-    <Compile Include="GameOverScreenInput.fs" />
     <Compile Include="PauseScreenRenderer.fs" />
     <Compile Include="PauseScreenInput.fs" />
     <Compile Include="Renderer.fs" />

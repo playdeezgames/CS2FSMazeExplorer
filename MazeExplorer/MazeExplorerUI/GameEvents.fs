@@ -1,8 +1,11 @@
 ﻿module GameEvents
 
 open GameData
+open Notifications
+open PausedExplorer
+open GameState
 
-let handle (event:GameData.GameEvent) =
+let handle (event:GameEvent) =
     match event with
     | PlaySound sfx -> Audio.playSound sfx
 

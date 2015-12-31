@@ -1,11 +1,11 @@
 ﻿module HelpScreenInput
 
-open GameData
 open System.Windows.Forms
+open GameState
 
 let handleHelpScreenInput keyCode =
     match keyCode with
     | Keys.Escape ->
-            GameData.gameState <- GameData.gameState |> GameEvents.restorePreviousGameState 
+            gameState <- gameState |> GameEvents.restorePreviousGameState 
             true
     | _ -> false

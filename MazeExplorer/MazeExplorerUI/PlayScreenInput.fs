@@ -4,6 +4,15 @@ open GameData
 open System.Windows.Forms
 open Explorer
 open GameSettings
+open PausedExplorer
+open GameState
+
+type UICommand =
+    | Help
+    | Pause
+    | Quit
+    | Options
+    | Wait
 
 let keyCodeToCommand direction keyCode = 
     match keyCode with
@@ -11,11 +20,11 @@ let keyCodeToCommand direction keyCode =
     | Keys.Right -> if direction = Cardinal.East  then Move else Turn Cardinal.East
     | Keys.Down  -> if direction = Cardinal.South then Move else Turn Cardinal.South
     | Keys.Left  -> if direction = Cardinal.West  then Move else Turn Cardinal.West
-    | Keys.Q     -> Quit
-    | Keys.Space -> Pause
-    | Keys.F1 -> Command.Help
-    | Keys.F3 -> Options
-    | _          -> Wait
+    | Keys.Q     -> External Quit
+    | Keys.Space -> External Pause
+    | Keys.F1 -> External Help
+    | Keys.F3 -> External Options
+    | _          -> External Wait
 
 let pauseGame options explorer =
     if options.PauseAllowed then
@@ -40,18 +49,18 @@ let handlePlayScreenInput keyCode explorer=
         keyCode
         |> keyCodeToCommand explorer.Orientation
     match command with
-    | Wait -> 
+    | External Wait -> 
             false
-    | Quit -> 
+    | External Quit -> 
             gameState <- TitleScreen
             true
-    | Pause -> 
+    | External Pause -> 
             gameState <- explorer |> pauseGame GameSettings.options
             true
-    | Help -> 
+    | External Help -> 
             gameState <- explorer |> openHelp GameSettings.options
             true
-    | Options -> 
+    | External Options -> 
             gameState <- explorer |> openOptions GameSettings.options
             true
     | _ -> 

@@ -2,6 +2,10 @@
 
 open Location
 open GameData
+open Difficulty
+open Constants
+open State
+open ExplorerState
 
 let determineLockTile (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
@@ -92,10 +96,10 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         
 let statusTable = 
-    [(GameData.Alive,     (Tiles.fonts.[Colors.Emerald], "Alive!  "));
-     (GameData.Dead,      (Tiles.fonts.[Colors.Garnet],  "Dead!   "));
-     (GameData.Win,       (Tiles.fonts.[Colors.Gold],    "Win!    "));
-     (GameData.OutOfTime, (Tiles.fonts.[Colors.Garnet],  "Times Up"))]
+    [(ExplorerState.Alive,     (Tiles.fonts.[Colors.Emerald], "Alive!  "));
+     (ExplorerState.Dead,      (Tiles.fonts.[Colors.Garnet],  "Dead!   "));
+     (ExplorerState.Win,       (Tiles.fonts.[Colors.Gold],    "Win!    "));
+     (ExplorerState.OutOfTime, (Tiles.fonts.[Colors.Garnet],  "Times Up"))]
     |> Map.ofSeq
 
 let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
@@ -122,15 +126,15 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     |> FrameBuffer.renderString (MazeColumns,17) "[Q]uit"
     Tiles.fonts.[Colors.Gold]
     |> FrameBuffer.renderString (MazeColumns,3) (explorer.State |> getCounter Keys |> sprintf "Keys %3i" )
-    let (font, text) = statusTable.[explorer |> GameData.getExplorerState]
+    let (font, text) = statusTable.[explorer |> ExplorerState.getExplorerState]
     font
     |> FrameBuffer.renderString (MazeColumns, 4) text
-    let timeRemaining = explorer |> GameData.getTimeLeft
-    if (explorer |> GameData.getExplorerState) = GameData.Alive then
+    let timeRemaining = explorer |> ExplorerState.getTimeLeft
+    if (explorer |> ExplorerState.getExplorerState) = ExplorerState.Alive then
         let timeFont = //TODO: make active pattern!
-            if timeRemaining >= GameData.TimeLimit / 2 then
+            if timeRemaining >= TimeLimit / 2 then
                 Tiles.fonts.[Colors.Emerald]
-            elif timeRemaining >= GameData.TimeLimit / 4 then
+            elif timeRemaining >= TimeLimit / 4 then
                 Tiles.fonts.[Colors.Gold]
             else
                 Tiles.fonts.[Colors.Garnet]

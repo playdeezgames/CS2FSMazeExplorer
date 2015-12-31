@@ -2,6 +2,7 @@
 
 open System.Windows.Forms
 open GameData
+open GameState
 
 let keyDown (event:KeyEventArgs) =
     match gameState with
@@ -9,7 +10,6 @@ let keyDown (event:KeyEventArgs) =
     | HelpScreen pausedExplorer                -> event.KeyCode |> HelpScreenInput.handleHelpScreenInput
     | OptionsScreen pausedExplorer             -> event.KeyCode |> OptionsScreenInput.handleOptionsScreenInput
     | PlayScreen explorer                      -> explorer |> PlayScreenInput.handlePlayScreenInput event.KeyCode
-    | GameOverScreen (explorer, explorerState) -> event |> GameOverScreenInput.keyDown
     | PauseScreen pausedExplorer               -> pausedExplorer |> PauseScreenInput.handlePauseScreenInput event.KeyCode
     
 

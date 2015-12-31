@@ -52,7 +52,17 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Utility.fs" />
-    <Compile Include="GameData.fs" />
+    <Compile Include="Constants.fs" />
+    <Compile Include="Difficulty.fs" />
+    <Compile Include="Notifications.fs" />
+    <Compile Include="State.fs" />
+    <Compile Include="ItemGeneration.fs" />
+    <Compile Include="ExplorerState.fs" />
+    <Compile Include="Initialization.fs" />
+    <Compile Include="ItemPickup.fs" />
+    <Compile Include="Update.fs" />
+    <Compile Include="Movement.fs" />
+    <Compile Include="Action.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

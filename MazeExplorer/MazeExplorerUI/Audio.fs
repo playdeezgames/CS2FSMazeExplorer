@@ -1,6 +1,7 @@
 ﻿module Audio
 
 open GameData
+open Notifications
 
 let soundPlayers =
     [(AcquireLoot,      "Loot.wav"     );

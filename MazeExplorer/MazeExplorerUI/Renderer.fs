@@ -1,6 +1,7 @@
 ﻿module Renderer
 
 open GameData
+open GameState
 
 let redraw graphics =
     match gameState with
@@ -8,6 +9,5 @@ let redraw graphics =
     | HelpScreen _                             -> HelpScreenRenderer.drawHelpScreen()
     | OptionsScreen _                          -> GameSettings.options |> OptionsScreenRenderer.drawOptionsScreen
     | PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
-    | GameOverScreen (explorer, explorerState) -> explorer |> PlayScreenRenderer.drawGameScreen
     | PauseScreen _                            -> PauseScreenRenderer.drawPauseScreen()
 

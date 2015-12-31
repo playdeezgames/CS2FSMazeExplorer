@@ -2,16 +2,18 @@
 
 open GameData
 open System.Windows.Forms
+open GameState
+open Initialization
 
 let handleTitleScreenInput keyCode =
     match keyCode with
     | Keys.F1 ->
-            GameData.gameState <- HelpScreen None
+            gameState <- HelpScreen None
             true
     | Keys.F2 -> 
-            GameData.gameState <- PlayScreen  ( restart GameSettings.options.DifficultyLevel  GameEvents.handle)
+            gameState <- PlayScreen  (restart GameSettings.options.DifficultyLevel  GameEvents.handle)
             true
     | Keys.F3 ->
-            GameData.gameState <- OptionsScreen None
+            gameState <- OptionsScreen None
             true
     | _ -> false

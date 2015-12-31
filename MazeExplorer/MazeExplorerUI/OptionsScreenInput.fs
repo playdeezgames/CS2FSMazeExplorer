@@ -1,7 +1,9 @@
 ﻿module OptionsScreenInput
 
+open Difficulty
 open GameData
 open System.Windows.Forms
+open GameState
 
 let increaseDifficulty difficultyLevel =
     match difficultyLevel with
@@ -30,6 +32,6 @@ let handleOptionsScreenInput keyCode =
             GameSettings.options <- {GameSettings.options with PauseAllowed=GameSettings.options.PauseAllowed |> not}
             true
     | Keys.Escape ->
-            GameData.gameState <- GameData.gameState |> GameEvents.restorePreviousGameState 
+            gameState <- gameState |> GameEvents.restorePreviousGameState 
             true
     | _ -> false
