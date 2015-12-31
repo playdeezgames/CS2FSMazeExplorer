@@ -60,6 +60,7 @@
     <Compile Include="ExplorerPatterns.fs" />
     <Compile Include="CommonPatterns.fs" />
     <Compile Include="CharacterPatterns.fs" />
+    <Compile Include="MonsterPatterns.fs" />
     <Compile Include="RoomTiles.fs" />
     <Compile Include="ExplorerTiles.fs" />
     <Compile Include="FontTiles.fs" />

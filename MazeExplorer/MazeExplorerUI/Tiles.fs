@@ -29,3 +29,13 @@ let Empty = new Tile.Tile(CommonPatterns.Empty, Colors.Tin, Colors.Tin)
 let Visible = new Tile.Tile(CommonPatterns.Empty, Colors.Copper, Colors.Copper)
 let Hidden = new Tile.Tile(CharacterPatterns.character63, Colors.Jade, Colors.Onyx)
 let NeverVisited = new Tile.Tile(CommonPatterns.Empty, Colors.Carnelian, Colors.Carnelian)
+
+let monsters =
+    [(Monsters.Skeleton, MonsterPatterns.Skeleton, Colors.Silver);
+    (Monsters.Zombie, MonsterPatterns.Zombie, Colors.Jade);
+    (Monsters.Mummy, MonsterPatterns.Mummy, Colors.Silver);
+    (Monsters.Ghoul, MonsterPatterns.Ghoul, Colors.Onyx);
+    (Monsters.Golem, MonsterPatterns.Golem, Colors.Copper);
+    (Monsters.Wizard, MonsterPatterns.Wizard, Colors.Tanzanite)]
+    |> Seq.map (fun (t,p,c)->(t, new Tile.Tile(p, Colors.Transparent, c)))
+    |> Map.ofSeq

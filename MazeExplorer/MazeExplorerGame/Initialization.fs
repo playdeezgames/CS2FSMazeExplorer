@@ -5,6 +5,7 @@ open Explorer
 open State
 open Constants
 open ItemGeneration
+open Monsters
 
 let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal.Direction, State>) =
     let keyCells, otherCells =
@@ -17,6 +18,16 @@ let addLocks (rng:int->seq<Location>->seq<Location>) (explorer:Explorer<Cardinal
         |> rng keyCells.Count
         |> Set.ofSeq
     {explorer with State = {explorer.State with Locks=lockLocations}}
+
+let addMonsters (rng:int->int) (explorer:Explorer<Cardinal.Direction, State>) =
+    let monsters = 
+        explorer.State.Items 
+        |> Map.toSeq
+        |> Seq.map (fun (xy,item)-> (xy, State.itemMonsters.[item] |> WeightedGenerator.generate rng))
+        |> Seq.filter (fun (xy,monsterType) -> monsterType |> Option.isSome)
+        |> Seq.map (fun (xy,monsterType) -> (xy,{Type=monsterType |> Option.get;Damage=0}))
+        |> Map.ofSeq
+    {explorer with State ={explorer.State with Monsters = monsters}}
 
 let rec visibleLocations (location:Location, direction:Cardinal.Direction, maze:Maze.Maze) =
     let nextLocation = Cardinal.walk location direction
@@ -43,12 +54,13 @@ let restart difficultyLevel eventHandler :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} |> initializeCounters)
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; Monsters = Map.empty; EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations  difficultyLevel newExplorer.Maze;
                     Visible = visibleLocations (newExplorer.Position, newExplorer.Orientation, newExplorer.Maze); 
                     Visited = [newExplorer.Position] |> Set.ofSeq}}
+    |> addMonsters (fun n->Utility.random.Next(n))
     |> addLocks Utility.pickMultiple
 
 

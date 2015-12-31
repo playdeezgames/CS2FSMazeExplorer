@@ -13,6 +13,18 @@ type ItemType =
     | Potion
     | LoveInterest
 
+let itemMonsters =
+    [(Treasure,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
+    (Trap,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
+    (Key,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
+    (Sword,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 1);]);
+    (Shield,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);(None,1)]);
+    (Hourglass,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);]);
+    (Potion,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);(None, 1);]);
+    (LoveInterest,[(Some Monsters.Wizard, 1)])]
+    |> Map.ofSeq
+    |> Map.map (fun k v ->v |> Map.ofSeq)
+
 type CounterType =
     | Loot
     | Health
@@ -22,6 +34,7 @@ type CounterType =
 type State = 
     {Visited: Set<Location>; 
     Items: Map<Location,ItemType>; 
+    Monsters: Map<Location,Monsters.Instance>;
     Locks: Set<Location>;
     Visible: Set<Location>; 
     Counters : Map<CounterType,int>;

@@ -66,13 +66,19 @@ let renderItem item isLocked gameOver location =
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
     | _,_ -> ()
 
+let renderMonster instance isLocked gameOver location =
+    ()
 
-let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (isLocked:bool) (gameOver:bool) =
+let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (monster: Monsters.Instance option) (isLocked:bool) (gameOver:bool) =
     if visible then
         Tiles.Visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
-        location
-        |> renderItem item isLocked gameOver
+        if monster.IsSome then
+            location
+            |> renderMonster monster isLocked gameOver
+        else
+            location
+            |> renderItem item isLocked gameOver
         renderWalls location exits
         renderLock location exits isLocked
     elif gameOver then
@@ -110,6 +116,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
                                 (k |> explorer.State.Visited.Contains) //visited
                                 (k |> explorer.State.Visible.Contains) //visible
                                 (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
+                                (if k |> explorer.State.Monsters.ContainsKey then Some explorer.State.Monsters.[k] else None) //monster
                                 (k |> explorer.State.Locks.Contains) //locked
                                 (explorer |> getExplorerState = Alive |> not)) //game over
     Tiles.explorer.[explorer.Orientation]
