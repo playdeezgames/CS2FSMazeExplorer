@@ -4,8 +4,8 @@ let TileColumns = 32
 let TileRows = 18
 let MazeColumns = 24
 let MazeRows = TileRows
-let TimeLimit = 300
-let TimeBonusPerHourglass = 60.
+let TimeLimit = 600
+let TimeBonusPerHourglass = 120.
 
 let EasyHourglassCount = 6
 let NormalHourglassCount = 5

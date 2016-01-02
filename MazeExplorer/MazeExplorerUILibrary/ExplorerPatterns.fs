@@ -123,3 +123,25 @@ let LoveInterest =
      "........";
      "........"]
     |> Pattern.patternFromStringListX
+
+let Amulet =
+    ["........";
+     "..XXXX..";
+     ".X....X.";
+     ".X....X.";
+     ".X.XX.X.";
+     "..XXXX..";
+     "...XX...";
+     "........"]
+    |> Pattern.patternFromStringListX
+
+let Exit =
+    ["........";
+     ".....XX.";
+     ".....XX.";
+     "...XXXX.";
+     "...XXXX.";
+     ".XXXXXX.";
+     ".XXXXXX.";
+     "........"]
+    |> Pattern.patternFromStringListX

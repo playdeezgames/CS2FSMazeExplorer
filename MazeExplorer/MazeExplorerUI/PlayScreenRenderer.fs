@@ -64,6 +64,12 @@ let renderItem item isLocked gameOver location =
     | true, Some Potion ->
                     ExplorerTiles.Potion
                     |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some ItemType.Amulet ->
+                    ExplorerTiles.Amulet
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
+    | true, Some Exit ->
+                    ExplorerTiles.Exit
+                    |> FrameBuffer.RenderTile (location.Column, location.Row)
     | true, Some Hourglass ->
                     ExplorerTiles.Hourglass
                     |> FrameBuffer.RenderTile (location.Column, location.Row)

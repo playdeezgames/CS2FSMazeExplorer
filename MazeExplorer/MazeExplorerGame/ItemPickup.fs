@@ -16,8 +16,15 @@ let pickupTreasure eventHandler next state =
 let pickupTrap eventHandler next state =
     PlaySound TriggerTrap
     |> eventHandler
-    state
-    |> changeCounter Wounds 1
+    let woundedState = 
+        state
+        |> changeCounter Wounds 1
+    if (woundedState |> getCounter Wounds ) >= (woundedState |> getCounter Health) && (woundedState |> getCounter Potions) > 0 then
+        woundedState
+        |> changeCounter Potions -1
+        |> setCounter Wounds 0
+    else
+        woundedState
 
 let pickupKey eventHandler next state =
     PlaySound AcquireKey
@@ -52,6 +59,15 @@ let pickupLoveInterest eventHandler next state =
     //TODO - needs a sound!
     state
     |> changeCounter Health (state |> getCounter Health)
+
+let pickupAmulet eventHandler next state =
+    //TODO - needs a sound!
+    state
+    |> setCounter Amulet 1
+
+let pickupExit eventHandler next state =
+    //TODO - needs a sound!
+    state
 
 
 

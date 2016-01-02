@@ -12,6 +12,8 @@ type ItemType =
     | Hourglass
     | Potion
     | LoveInterest
+    | Amulet
+    | Exit
 
 let itemMonsters =
     [(Treasure,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 3);]);
@@ -21,6 +23,8 @@ let itemMonsters =
     (Shield,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(None,2)]);
     (Hourglass,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);]);
     (Potion,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 6);]);
+    (Amulet,[(Some Monsters.Golem, 1)]);
+    (Exit,[(None, 1)]);
     (LoveInterest,[(Some Monsters.Wizard, 1)])]
     |> Map.ofSeq
     |> Map.map (fun k v ->v |> Map.ofSeq)
@@ -33,6 +37,7 @@ type CounterType =
     | Potions
     | Attack
     | Defense
+    | Amulet
 
 type State = 
     {Visited: Set<Location>; 

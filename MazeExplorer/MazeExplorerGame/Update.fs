@@ -28,6 +28,8 @@ let updateInventory eventHandler next state =
     | Some Potion -> state |> pickupPotion eventHandler next
     | Some Hourglass -> state |> pickupHourglass eventHandler next
     | Some LoveInterest -> state |> pickupLoveInterest eventHandler next
+    | Some ItemType.Amulet -> state |> pickupAmulet eventHandler next
+    | Some Exit -> state |> pickupExit eventHandler next
     | None -> state
     |> pickupItem next
 

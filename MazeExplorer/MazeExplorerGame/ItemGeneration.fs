@@ -7,6 +7,8 @@ let fixedItemList difficultyLevel =
     let difficultySetting =
         difficultySettings.[difficultyLevel]
     [(LoveInterest,1);
+    (ItemType.Amulet,1);
+    (Exit,1);
     (Hourglass, difficultySetting.Hourglasses);
     (Sword, difficultySetting.Swords)]
     |> List.map (fun (k,v)-> [1..v] |> List.map (fun e-> k))
@@ -16,9 +18,9 @@ let fixedItemList difficultyLevel =
 let variableItemGenerator =
     [(Treasure,25);
     (Trap,20);
-    (Shield,15);
+    (Shield,10);
     (Potion,5);
-    (Key,10)]
+    (Key,15)]
     |> WeightedGenerator.ofPairs
 
 let generateVariableItem()= WeightedGenerator.generate (fun n->Utility.random.Next(n)) variableItemGenerator

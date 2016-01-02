@@ -37,11 +37,21 @@ let fightLocation eventHandler next (explorer: Explorer<Cardinal.Direction, Stat
     let monsterDefense = descriptor.Defense
     let monsterDamage = if playerAttack > monsterDefense then playerAttack - monsterDefense else 0
     let playerDamage = if monsterAttack > playerDefense then monsterAttack - playerDefense else 0
-    let newPlayerDefense = if monsterAttack > playerDefense then 0 else playerDefense - monsterAttack
+    let newPlayerDefense = if playerDefense > 0 && Utility.random.Next(6) < monsterAttack then playerDefense - 1 else playerDefense
+    let newPlayerWounds, newPotions =
+        if ((explorer.State |> getCounter Wounds) + playerDamage) >= (explorer.State |> getCounter Health) then
+            if explorer.State |> getCounter Potions > 0 then
+                //TODO drink potion sound
+                0, ((explorer.State |> getCounter Potions) - 1)
+            else
+                (explorer.State |> getCounter Health), 0
+        else
+            (explorer.State |> getCounter Wounds) + playerDamage, explorer.State |> getCounter Potions
     {explorer with 
         State = 
             explorer.State 
-            |> changeCounter Wounds playerDamage 
+            |> setCounter Wounds newPlayerWounds
+            |> setCounter Potions newPotions
             |> setCounter Defense newPlayerDefense 
             |> addMonsterDamage next monsterDamage}
 
