@@ -9,12 +9,13 @@ type DifficultyLevel =
 
 type DifficultySettings =
     { Hourglasses: int;
+    Potions: int;
     Swords:int}
 
 let difficultySettings =
-    [Easy,{Hourglasses=EasyHourglassCount;Swords=EasySwordCount};
-    Normal,{Hourglasses=NormalHourglassCount;Swords=NormalSwordCount};
-    Hard,{Hourglasses=HardHourglassCount;Swords=HardSwordCount}]
+    [Easy,{Hourglasses=EasyHourglassCount;Swords=EasySwordCount; Potions=EasyPotionCount};
+    Normal,{Hourglasses=NormalHourglassCount;Swords=NormalSwordCount; Potions=NormalPotionCount};
+    Hard,{Hourglasses=HardHourglassCount;Swords=HardSwordCount; Potions=HardPotionCount}]
     |> Map.ofSeq
 
 
