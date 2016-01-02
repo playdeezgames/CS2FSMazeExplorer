@@ -35,7 +35,7 @@ let monsters =
     (Monsters.Zombie, MonsterPatterns.Zombie, Colors.Jade);
     (Monsters.Mummy, MonsterPatterns.Mummy, Colors.Silver);
     (Monsters.Ghoul, MonsterPatterns.Ghoul, Colors.Onyx);
-    (Monsters.Golem, MonsterPatterns.Golem, Colors.Copper);
+    (Monsters.Golem, MonsterPatterns.Golem, Colors.Gold);
     (Monsters.Wizard, MonsterPatterns.Wizard, Colors.Tanzanite)]
     |> Seq.map (fun (t,p,c)->(t, new Tile.Tile(p, Colors.Transparent, c)))
     |> Map.ofSeq
