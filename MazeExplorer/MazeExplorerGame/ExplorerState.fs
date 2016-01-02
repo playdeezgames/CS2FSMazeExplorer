@@ -9,9 +9,14 @@ let wonGame (explorer:Explorer.Explorer<Cardinal.Direction,State>) =
     |> Option.isNone
 
 let isDead explorer = 
-    explorer.State
-    |> getCounter Health
-    <= 0
+    let wounds = 
+        explorer.State
+        |> getCounter Wounds
+    let health = 
+        explorer.State
+        |> getCounter Health
+    wounds >= health
+
 
 let getTimeLeft explorer =
     let timeRemaining = (explorer.State.EndTime - System.DateTime.Now).TotalSeconds |> int

@@ -17,7 +17,7 @@ let pickupTrap eventHandler next state =
     PlaySound TriggerTrap
     |> eventHandler
     state
-    |> changeCounter Health -1
+    |> changeCounter Wounds 1
 
 let pickupKey eventHandler next state =
     PlaySound AcquireKey
@@ -29,21 +29,29 @@ let pickupSword eventHandler next state =
     PlaySound AcquireSword
     |> eventHandler
     state
+    |> changeCounter Attack 1
 
 let pickupShield eventHandler next state =
     PlaySound AcquireShield
     |> eventHandler
     state
+    |> changeCounter Defense 1
 
 let pickupPotion eventHandler next state =
     PlaySound AcquirePotion
     |> eventHandler
     state
+    |> changeCounter Potions 1
 
 let pickupHourglass eventHandler next state =
     PlaySound AcquireHourglass
     |> eventHandler
     {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
+
+let pickupLoveInterest eventHandler next state =
+    //TODO - needs a sound!
+    state
+    |> changeCounter Health (state |> getCounter Health)
 
 
 

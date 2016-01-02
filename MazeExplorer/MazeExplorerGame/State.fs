@@ -14,22 +14,25 @@ type ItemType =
     | LoveInterest
 
 let itemMonsters =
-    [(Treasure,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
-    (Trap,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
-    (Key,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 1);]);
-    (Sword,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 1);]);
-    (Shield,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);(None,1)]);
+    [(Treasure,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 3);]);
+    (Trap,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 2);]);
+    (Key,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 2);]);
+    (Sword,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 5);]);
+    (Shield,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(None,2)]);
     (Hourglass,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);]);
-    (Potion,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);(None, 1);]);
+    (Potion,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 6);]);
     (LoveInterest,[(Some Monsters.Wizard, 1)])]
     |> Map.ofSeq
     |> Map.map (fun k v ->v |> Map.ofSeq)
 
 type CounterType =
     | Loot
+    | Wounds
     | Health
     | Keys
     | Potions
+    | Attack
+    | Defense
 
 type State = 
     {Visited: Set<Location>; 
@@ -54,6 +57,9 @@ let changeCounter counterType delta  (state:State)=
 
 let initializeCounters state =
     state
+    |> setCounter Wounds InitialWounds
     |> setCounter Health InitialHealth
+    |> setCounter Attack InitialAttack
+    |> setCounter Potions InitialPotions
 
 

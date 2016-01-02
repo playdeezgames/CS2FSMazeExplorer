@@ -14,9 +14,9 @@ let fixedItemList difficultyLevel =
     |> Seq.ofList
 
 let variableItemGenerator =
-    [(Treasure,30);
+    [(Treasure,25);
     (Trap,20);
-    (Shield,5);
+    (Shield,15);
     (Potion,5);
     (Key,10)]
     |> WeightedGenerator.ofPairs
