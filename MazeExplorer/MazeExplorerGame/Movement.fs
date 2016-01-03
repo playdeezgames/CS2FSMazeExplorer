@@ -41,11 +41,13 @@ let fightLocation eventHandler next (explorer: Explorer<Cardinal.Direction, Stat
     let newPlayerWounds, newPotions =
         if ((explorer.State |> getCounter Wounds) + playerDamage) >= (explorer.State |> getCounter Health) then
             if explorer.State |> getCounter Potions > 0 then
-                //TODO drink potion sound
+                DrinkPotion |> PlaySound |> eventHandler
                 0, ((explorer.State |> getCounter Potions) - 1)
             else
+                Death |> PlaySound |> eventHandler
                 (explorer.State |> getCounter Health), 0
         else
+            Fight |> PlaySound |> eventHandler
             (explorer.State |> getCounter Wounds) + playerDamage, explorer.State |> getCounter Potions
     {explorer with 
         State = 
@@ -81,6 +83,7 @@ let moveAction eventHandler (explorer: Explorer<Cardinal.Direction, State>) =
             explorer
             |> enterLocation eventHandler next
     else
+        Blocked |> PlaySound |> eventHandler
         explorer
 
 let turnAction eventHandler direction explorer = 

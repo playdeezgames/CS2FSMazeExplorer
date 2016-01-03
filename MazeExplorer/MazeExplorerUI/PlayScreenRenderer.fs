@@ -82,16 +82,18 @@ let renderMonster instance isLocked location =
     else
         ()
 
-let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (monster: Monsters.Instance option) (isLocked:bool) (hasKeys:bool) (gameOver:bool) =
+let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (monster: Monsters.Instance option) (isLocked:bool) (hasKeys:bool) (hasAmulet:bool) (gameOver:bool) =
     if visible then
         Tiles.Visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
         if monster.IsSome then
             location
             |> renderMonster (monster |> Option.get) isLocked
-        else
+        elif hasAmulet then
             location
             |> renderItem item isLocked gameOver
+        else
+            ()
         renderWalls location exits
         renderLock location exits isLocked hasKeys
     elif gameOver then
@@ -138,6 +140,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
                                 (if k |> explorer.State.Monsters.ContainsKey then Some explorer.State.Monsters.[k] else None) //monster
                                 (k |> explorer.State.Locks.Contains) //locked
                                 (explorer.State |> getCounter Keys > 0) //has keys
+                                (explorer.State |> getCounter Amulet > 0) //has amulet
                                 (explorer |> getExplorerState = Alive |> not)) //game over
     Tiles.explorer.[explorer.Orientation]
     |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)

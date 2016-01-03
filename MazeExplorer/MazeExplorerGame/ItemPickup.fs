@@ -56,17 +56,17 @@ let pickupHourglass eventHandler next state =
     {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
 
 let pickupLoveInterest eventHandler next state =
-    //TODO - needs a sound!
+    LoveInterest |> PlaySound |> eventHandler
     state
     |> changeCounter Health (state |> getCounter Health)
 
 let pickupAmulet eventHandler next state =
-    //TODO - needs a sound!
+    Amulet |> PlaySound |> eventHandler
     state
-    |> setCounter Amulet 1
+    |> setCounter CounterType.Amulet 1
 
 let pickupExit eventHandler next state =
-    //TODO - needs a sound!
+    Exit |> PlaySound |> eventHandler
     state
 
 
