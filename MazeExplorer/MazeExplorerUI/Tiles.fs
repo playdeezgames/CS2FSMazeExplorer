@@ -1,7 +1,10 @@
 ﻿module Tiles
 
 let room = RoomTiles.createCardinal Colors.Transparent Colors.Emerald
-let lock = RoomTiles.createCardinalLocks Colors.Transparent Colors.Onyx
+let lock = 
+    [(false,RoomTiles.createCardinalLocks Colors.Transparent Colors.Onyx);
+    (true,RoomTiles.createCardinalLocks Colors.Transparent Colors.Gold)]
+    |> Map.ofSeq
 
 let explorer = ExplorerTiles.createCardinal Colors.Transparent Colors.Silver
 

@@ -12,11 +12,9 @@ let FirstStatsColumn = MazeColumns
 let SecondStatsColumn = FirstStatsColumn + (TileColumns - MazeColumns) / 2
 let UIKey = new Tile.Tile(ExplorerPatterns.Key, Colors.Transparent, Colors.Copper)
 
-
-let determineLockTile (exits:Set<Cardinal.Direction>) =
+let determineLockTile (hasKey:bool) (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
-    Tiles.lock |> Map.tryFind flags
-        
+    Tiles.lock |> Map.find hasKey |> Map.tryFind flags
 
 let determineCellTile (exits:Set<Cardinal.Direction>) =
     let flags = (exits.Contains Cardinal.North, exits.Contains Cardinal.East, exits.Contains Cardinal.South, exits.Contains Cardinal.West)
@@ -27,16 +25,15 @@ let toDirections location (exits:Set<Location>) =
     |> List.filter (fun d->d |> Cardinal.walk location |> exits.Contains )
     |> Set.ofList
 
-let renderLock (location:Location) (exits:Set<Location>) (isLocked:bool) =
+let renderLock (location:Location) (exits:Set<Location>) (isLocked:bool) (hasKey:bool) =
     if isLocked then
         exits
         |> toDirections location
-        |> determineLockTile
+        |> determineLockTile hasKey
         |> Option.get
         |> FrameBuffer.RenderTile (location.Column, location.Row)
     else
         ()
-
 
 let renderWalls (location:Location) (exits:Set<Location>) =
     exits
@@ -85,7 +82,7 @@ let renderMonster instance isLocked location =
     else
         ()
 
-let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (monster: Monsters.Instance option) (isLocked:bool) (gameOver:bool) =
+let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible:bool) (item:ItemType option) (monster: Monsters.Instance option) (isLocked:bool) (hasKeys:bool) (gameOver:bool) =
     if visible then
         Tiles.Visible
         |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -96,7 +93,7 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
             location
             |> renderItem item isLocked gameOver
         renderWalls location exits
-        renderLock location exits isLocked
+        renderLock location exits isLocked hasKeys
     elif gameOver then
         if visited then
             Tiles.Empty
@@ -107,7 +104,7 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
         location
         |> renderItem item isLocked gameOver
         renderWalls location exits
-        renderLock location exits isLocked
+        renderLock location exits isLocked hasKeys
     elif visited then
         Tiles.Empty
         |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -116,8 +113,9 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
             location
             |> renderMonster (monster |> Option.get) isLocked
         else
-            ()
-        renderLock location exits isLocked
+            location
+            |> renderItem item isLocked gameOver
+        renderLock location exits isLocked hasKeys
     else
         Tiles.Hidden
         |> FrameBuffer.RenderTile (location.Column, location.Row)
@@ -139,6 +137,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
                                 (if k |> explorer.State.Items.ContainsKey then Some explorer.State.Items.[k] else None) //item
                                 (if k |> explorer.State.Monsters.ContainsKey then Some explorer.State.Monsters.[k] else None) //monster
                                 (k |> explorer.State.Locks.Contains) //locked
+                                (explorer.State |> getCounter Keys > 0) //has keys
                                 (explorer |> getExplorerState = Alive |> not)) //game over
     Tiles.explorer.[explorer.Orientation]
     |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
@@ -163,8 +162,6 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     Tiles.fonts.[Colors.Aquamarine]
     |> FrameBuffer.renderString (SecondStatsColumn+1,2) (explorer.State |> getCounter Defense |> sprintf "%3i" )
 
-    Tiles.fonts.[Colors.Sapphire]
-    |> FrameBuffer.renderString (MazeColumns,15) "[D]rink"
     Tiles.fonts.[Colors.Sapphire]
     |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
     Tiles.fonts.[Colors.Sapphire]

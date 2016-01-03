@@ -16,6 +16,20 @@ let fixedItemList difficultyLevel =
     |> List.reduce (@)
     |> Seq.ofList
 
+let itemMonsters =
+    [(Treasure,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 3);]);
+    (Trap,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 2);]);
+    (Key,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Mummy, 1);(None, 2);]);
+    (Sword,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(None, 3);]);
+    (Shield,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(None, 5)]);
+    (Hourglass,[(Some Monsters.Zombie, 3);(Some Monsters.Mummy, 2);(Some Monsters.Ghoul, 1);]);
+    (Potion,[(Some Monsters.Skeleton, 3);(Some Monsters.Zombie, 2);(Some Monsters.Ghoul, 1);(None, 2);]);
+    (ItemType.Amulet,[(Some Monsters.Golem, 1)]);
+    (Exit,[(None, 1)]);
+    (LoveInterest,[(Some Monsters.Wizard, 1)])]
+    |> Map.ofSeq
+    |> Map.map (fun k v ->v |> Map.ofSeq)
+
 let variableItemGenerator =
     [(Treasure,25);
     (Trap,20);

@@ -37,7 +37,7 @@ let fightLocation eventHandler next (explorer: Explorer<Cardinal.Direction, Stat
     let monsterDefense = descriptor.Defense
     let monsterDamage = if playerAttack > monsterDefense then playerAttack - monsterDefense else 0
     let playerDamage = if monsterAttack > playerDefense then monsterAttack - playerDefense else 0
-    let newPlayerDefense = if playerDefense > 0 && Utility.random.Next(6) < monsterAttack then playerDefense - 1 else playerDefense
+    let newPlayerDefense = if playerDefense > 0 && Utility.random.Next(3) < monsterAttack then playerDefense - 1 else playerDefense
     let newPlayerWounds, newPotions =
         if ((explorer.State |> getCounter Wounds) + playerDamage) >= (explorer.State |> getCounter Health) then
             if explorer.State |> getCounter Potions > 0 then

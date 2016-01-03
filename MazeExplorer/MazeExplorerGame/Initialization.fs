@@ -23,7 +23,7 @@ let addMonsters (rng:int->int) (explorer:Explorer<Cardinal.Direction, State>) =
     let monsters = 
         explorer.State.Items 
         |> Map.toSeq
-        |> Seq.map (fun (xy,item)-> (xy, State.itemMonsters.[item] |> WeightedGenerator.generate rng))
+        |> Seq.map (fun (xy,item)-> (xy, ItemGeneration.itemMonsters.[item] |> WeightedGenerator.generate rng))
         |> Seq.filter (fun (xy,monsterType) -> monsterType |> Option.isSome)
         |> Seq.map (fun (xy,monsterType) -> (xy,{Type=monsterType |> Option.get;Damage=0}))
         |> Map.ofSeq

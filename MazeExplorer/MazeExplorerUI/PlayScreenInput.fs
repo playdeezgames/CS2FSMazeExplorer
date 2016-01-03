@@ -20,7 +20,6 @@ let keyCodeToCommand direction keyCode =
     | Keys.Right -> if direction = Cardinal.East  then Move else Turn Cardinal.East
     | Keys.Down  -> if direction = Cardinal.South then Move else Turn Cardinal.South
     | Keys.Left  -> if direction = Cardinal.West  then Move else Turn Cardinal.West
-    | Keys.D     -> Drink
     | Keys.Q     -> External Quit
     | Keys.Space -> External Pause
     | Keys.F1    -> External Help

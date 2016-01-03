@@ -34,7 +34,7 @@ let helpScreenTiles =
     (Tiles.room.[(false,true,false,false)],(0,10));
     (Tiles.Empty,(0,11));
     (Tiles.room.[(false,true,false,false)],(0,11));
-    (Tiles.lock.[(false,true,false,false)],(0,11));
+    (Tiles.lock.[false].[(false,true,false,false)],(0,11));
     (Tiles.NeverVisited,(0,12));
     (ExplorerTiles.Potion,(0,13));
     ]
