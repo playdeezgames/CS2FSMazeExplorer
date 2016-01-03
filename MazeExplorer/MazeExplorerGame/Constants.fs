@@ -6,6 +6,7 @@ let MazeColumns = 24
 let MazeRows = TileRows
 let TimeLimit = 600
 let TimeBonusPerHourglass = 120.
+let DefenseSavingThrow = 3
 
 let EasyHourglassCount = 6
 let NormalHourglassCount = 5

@@ -5,6 +5,7 @@ open State
 open Update
 open Notifications
 open Initialization
+open Constants
 
 let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
     next
@@ -26,34 +27,47 @@ let addMonsterDamage next damage (state: State) =
         {state with Monsters = state.Monsters |> Map.remove next}
     else
         {state with Monsters = state.Monsters |> Map.add next {monsterInstance with Damage = monsterInstance.Damage + damage} }
-    
+
+let getMonsterStats next state =
+    let monsterInstance = state.Monsters.[next]
+    let descriptor = Monsters.descriptors.[monsterInstance.Type]
+    (descriptor.Attack, descriptor.Defense)
+
+let getPlayerStats state =
+    (state |> getCounter Attack, state |> getCounter Defense)
+
+let calculateDamage attack defense =
+    if attack > defense then 
+        attack - defense 
+    else 
+        0
+
+let adjustPlayerDefense defense attack =
+    if defense > 0 && Utility.random.Next(DefenseSavingThrow) < attack then 
+        defense - 1 
+    else 
+        defense
+
+let takePlayerDamage damage state =
+    if ((state |> getCounter Wounds) + damage) >= (state |> getCounter Health) then
+        if state |> getCounter Potions > 0 then
+            (DrinkPotion |> PlaySound, (state |> changeCounter Potions -1 |> setCounter Wounds 0))
+        else
+            (Death |> PlaySound, (state |> setCounter Wounds (state |> getCounter Health)))
+    else
+        (Fight |> PlaySound, (state |> changeCounter Wounds damage))
 
 let fightLocation eventHandler next (explorer: Explorer<Cardinal.Direction, State>) =
-    let monsterInstance = explorer.State.Monsters.[next]
-    let descriptor = Monsters.descriptors.[monsterInstance.Type]
-    let playerAttack = explorer.State |> getCounter Attack
-    let playerDefense = explorer.State |> getCounter Defense
-    let monsterAttack = descriptor.Attack
-    let monsterDefense = descriptor.Defense
-    let monsterDamage = if playerAttack > monsterDefense then playerAttack - monsterDefense else 0
-    let playerDamage = if monsterAttack > playerDefense then monsterAttack - playerDefense else 0
-    let newPlayerDefense = if playerDefense > 0 && Utility.random.Next(3) < monsterAttack then playerDefense - 1 else playerDefense
-    let newPlayerWounds, newPotions =
-        if ((explorer.State |> getCounter Wounds) + playerDamage) >= (explorer.State |> getCounter Health) then
-            if explorer.State |> getCounter Potions > 0 then
-                DrinkPotion |> PlaySound |> eventHandler
-                0, ((explorer.State |> getCounter Potions) - 1)
-            else
-                Death |> PlaySound |> eventHandler
-                (explorer.State |> getCounter Health), 0
-        else
-            Fight |> PlaySound |> eventHandler
-            (explorer.State |> getCounter Wounds) + playerDamage, explorer.State |> getCounter Potions
+    let playerAttack, playerDefense = explorer.State |> getPlayerStats
+    let monsterAttack, monsterDefense = explorer.State |> getMonsterStats next
+    let monsterDamage = calculateDamage playerAttack monsterDefense
+    let playerDamage = calculateDamage monsterAttack playerDefense
+    let newPlayerDefense = adjustPlayerDefense playerDefense monsterAttack
+    let sfx, damagedState = explorer.State |> takePlayerDamage playerDamage
+    sfx |> eventHandler
     {explorer with 
         State = 
-            explorer.State 
-            |> setCounter Wounds newPlayerWounds
-            |> setCounter Potions newPotions
+            damagedState
             |> setCounter Defense newPlayerDefense 
             |> addMonsterDamage next monsterDamage}
 

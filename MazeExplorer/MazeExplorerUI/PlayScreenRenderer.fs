@@ -89,11 +89,9 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
         if monster.IsSome then
             location
             |> renderMonster (monster |> Option.get) isLocked
-        elif hasAmulet then
+        else
             location
             |> renderItem item isLocked gameOver
-        else
-            ()
         renderWalls location exits
         renderLock location exits isLocked hasKeys
     elif gameOver then
@@ -114,9 +112,11 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
         if monster.IsSome then
             location
             |> renderMonster (monster |> Option.get) isLocked
-        else
+        elif hasAmulet then
             location
             |> renderItem item isLocked gameOver
+        else
+            ()
         renderLock location exits isLocked hasKeys
     else
         Tiles.Hidden
