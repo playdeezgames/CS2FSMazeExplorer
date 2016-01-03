@@ -129,6 +129,34 @@ let statusTable =
      (ExplorerState.OutOfTime, (Tiles.fonts.[Colors.Garnet],  "Times Up"))]
     |> Map.ofSeq
 
+let renderExplorer orientation location =
+    Tiles.explorer.[orientation]
+    |> FrameBuffer.RenderTile (location.Column, location.Row)
+
+let playScreenStrings =
+    [(Colors.Gold,       (SecondStatsColumn    ,  0), fun s-> s |> getCounter Loot    |> sprintf "$%3i");
+     (Colors.Copper,     (FirstStatsColumn  + 1,  1), fun s-> s |> getCounter Keys    |> sprintf "%3i");
+     (Colors.Amethyst,   (SecondStatsColumn + 1,  1), fun s-> s |> getCounter Potions |> sprintf "%3i");
+     (Colors.Silver,     (FirstStatsColumn  + 1,  2), fun s-> s |> getCounter Attack  |> sprintf "%3i");
+     (Colors.Aquamarine, (SecondStatsColumn + 1,  2), fun s-> s |> getCounter Defense |> sprintf "%3i");
+     (Colors.Garnet,     (FirstStatsColumn     ,  0), fun s-> ((s |> getCounter Health)-(s |> getCounter Wounds))    |> sprintf "\u0003%3i");
+     (Colors.Sapphire,   (FirstStatsColumn     , 16), fun s->  "\u0018\u0019\u001B\u001AMove");
+     (Colors.Sapphire,   (FirstStatsColumn     , 17), fun s->  "[Q]uit")]
+
+let playScreenTiles =
+    [(UIKey,                (FirstStatsColumn  ,1));
+     (ExplorerTiles.Potion, (SecondStatsColumn ,1));
+     (ExplorerTiles.Sword,  (FirstStatsColumn  ,2));
+     (ExplorerTiles.Shield, (SecondStatsColumn ,2))]
+
+let (|LotsOfTime|StillTimeLeft|RunningOutOfTime|) timeRemaining =
+    if timeRemaining > TimeLimit / 2 then
+        LotsOfTime
+    elif timeRemaining > TimeLimit / 4 then
+        StillTimeLeft
+    else
+        RunningOutOfTime
+
 let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     Colors.Onyx
     |> FrameBuffer.clear
@@ -142,50 +170,22 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
                                 (explorer.State |> getCounter Keys > 0) //has keys
                                 (explorer.State |> getCounter Amulet > 0) //has amulet
                                 (explorer |> getExplorerState = Alive |> not)) //game over
-    Tiles.explorer.[explorer.Orientation]
-    |> FrameBuffer.RenderTile (explorer.Position.Column, explorer.Position.Row)
-    Tiles.fonts.[Colors.Garnet]
-    |> FrameBuffer.renderString (FirstStatsColumn,0) (((explorer.State |> getCounter Health) - (explorer.State |> getCounter Wounds)) |> sprintf "\u0003%3i")
-    Tiles.fonts.[Colors.Gold]
-    |> FrameBuffer.renderString (SecondStatsColumn,0) (explorer.State |> getCounter Loot |> sprintf "$%3i" )
-    UIKey
-    |> FrameBuffer.RenderTile (FirstStatsColumn,1)
-    Tiles.fonts.[Colors.Copper]
-    |> FrameBuffer.renderString (FirstStatsColumn+1,1) (explorer.State |> getCounter Keys |> sprintf "%3i" )
-    ExplorerTiles.Potion
-    |> FrameBuffer.RenderTile (SecondStatsColumn,1)
-    Tiles.fonts.[Colors.Amethyst]
-    |> FrameBuffer.renderString (SecondStatsColumn+1,1) (explorer.State |> getCounter Potions |> sprintf "%3i" )
-    ExplorerTiles.Sword
-    |> FrameBuffer.RenderTile (FirstStatsColumn,2)
-    Tiles.fonts.[Colors.Silver]
-    |> FrameBuffer.renderString (FirstStatsColumn+1,2) (explorer.State |> getCounter Attack |> sprintf "%3i" )
-    ExplorerTiles.Shield
-    |> FrameBuffer.RenderTile (SecondStatsColumn,2)
-    Tiles.fonts.[Colors.Aquamarine]
-    |> FrameBuffer.renderString (SecondStatsColumn+1,2) (explorer.State |> getCounter Defense |> sprintf "%3i" )
-
-    Tiles.fonts.[Colors.Sapphire]
-    |> FrameBuffer.renderString (MazeColumns,16) "\u0018\u0019\u001B\u001AMove"
-    Tiles.fonts.[Colors.Sapphire]
-    |> FrameBuffer.renderString (MazeColumns,17) "[Q]uit"
+    explorer.Position
+    |> renderExplorer explorer.Orientation
+    playScreenStrings
+    |> List.iter (fun (c,xy,xform) -> Tiles.fonts.[c] |> FrameBuffer.renderString xy (explorer.State |> xform))
+    playScreenTiles
+    |> List.iter (fun (t,xy) -> t |> FrameBuffer.RenderTile xy)
     let (font, text) = statusTable.[explorer |> ExplorerState.getExplorerState]
     font
-    |> FrameBuffer.renderString (MazeColumns, 4) text
+    |> FrameBuffer.renderString (FirstStatsColumn, 4) text
     let timeRemaining = explorer |> ExplorerState.getTimeLeft
-    if (explorer |> ExplorerState.getExplorerState) = ExplorerState.Alive then
-        let timeFont = //TODO: make active pattern!
-            if timeRemaining >= TimeLimit / 2 then
-                Tiles.fonts.[Colors.Emerald]
-            elif timeRemaining >= TimeLimit / 4 then
-                Tiles.fonts.[Colors.Gold]
-            else
-                Tiles.fonts.[Colors.Garnet]
-        timeFont
-        |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
-    else
-        Tiles.fonts.[Colors.Garnet]
-        |> FrameBuffer.renderString (MazeColumns,5) "        "
+    let timePrintingFunction = FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
+    match explorer |> ExplorerState.getExplorerState, timeRemaining with
+    | Alive, LotsOfTime       -> Tiles.fonts.[Colors.Emerald] |> timePrintingFunction
+    | Alive, StillTimeLeft    -> Tiles.fonts.[Colors.Gold] |> timePrintingFunction
+    | Alive, RunningOutOfTime -> Tiles.fonts.[Colors.Garnet] |> timePrintingFunction
+    | _, _                    -> ()
     
 
 
