@@ -41,39 +41,24 @@ let renderWalls (location:Location) (exits:Set<Location>) =
     |> determineCellTile
     |> FrameBuffer.RenderTile (location.Column, location.Row)
 
+let itemTiles =
+    [((true,Some Key            ), ExplorerTiles.Key);
+     ((true,Some Treasure       ), ExplorerTiles.Treasure);
+     ((true,Some Trap           ), ExplorerTiles.Trap);
+     ((true,Some Sword          ), ExplorerTiles.Sword);
+     ((true,Some Shield         ), ExplorerTiles.Shield);
+     ((true,Some Potion         ), ExplorerTiles.Potion);
+     ((true,Some ItemType.Amulet), ExplorerTiles.Amulet);
+     ((true,Some Exit           ), ExplorerTiles.Exit);
+     ((true,Some Hourglass      ), ExplorerTiles.Hourglass);
+     ((true,Some LoveInterest   ), ExplorerTiles.LoveInterest)]
+    |> Map.ofSeq
+
 let renderItem item isLocked gameOver location =
-    match (gameOver || not isLocked), item with
-    | true, Some Key ->
-                    ExplorerTiles.Key
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Treasure ->
-                    ExplorerTiles.Treasure
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Trap ->
-                    ExplorerTiles.Trap
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Sword ->
-                    ExplorerTiles.Sword
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Shield ->
-                    ExplorerTiles.Shield
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Potion ->
-                    ExplorerTiles.Potion
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some ItemType.Amulet ->
-                    ExplorerTiles.Amulet
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Exit ->
-                    ExplorerTiles.Exit
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some Hourglass ->
-                    ExplorerTiles.Hourglass
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | true, Some LoveInterest ->
-                    ExplorerTiles.LoveInterest
-                    |> FrameBuffer.RenderTile (location.Column, location.Row)
-    | _,_ -> ()
+    itemTiles
+    |> Map.tryFind ((gameOver || not isLocked), item)
+    |> Option.bind (fun e-> e|> FrameBuffer.RenderTile (location.Column, location.Row) |> Some)
+    |> ignore
 
 let renderMonster instance isLocked location =
     if isLocked |> not then
@@ -180,14 +165,11 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     font
     |> FrameBuffer.renderString (FirstStatsColumn, 4) text
     let timeRemaining = explorer |> ExplorerState.getTimeLeft
-    let timePrintingFunction = FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i")
     match explorer |> ExplorerState.getExplorerState, timeRemaining with
-    | Alive, LotsOfTime       -> Tiles.fonts.[Colors.Emerald] |> timePrintingFunction
-    | Alive, StillTimeLeft    -> Tiles.fonts.[Colors.Gold] |> timePrintingFunction
-    | Alive, RunningOutOfTime -> Tiles.fonts.[Colors.Garnet] |> timePrintingFunction
-    | _, _                    -> ()
-    
-
-
-
+    | Alive, LotsOfTime       -> Some Tiles.fonts.[Colors.Emerald]
+    | Alive, StillTimeLeft    -> Some Tiles.fonts.[Colors.Gold]
+    | Alive, RunningOutOfTime -> Some Tiles.fonts.[Colors.Garnet]
+    | _, _                    -> None
+    |> Option.bind (fun e-> e |> FrameBuffer.renderString (MazeColumns,5) (timeRemaining |> sprintf "Time %3i") |> Some)
+    |> ignore
 
