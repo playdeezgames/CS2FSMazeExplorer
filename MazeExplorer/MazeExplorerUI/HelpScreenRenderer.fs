@@ -1,7 +1,5 @@
 ﻿module HelpScreenRenderer
 
-open GameData
-
 let helpScreenStrings =
     [(Colors.Silver,(0,0),"Help");
     (Colors.Onyx,(2,1),"Treasure");

@@ -16,14 +16,22 @@ type ItemType =
     | Exit
 
 type CounterType =
-    | Loot
+    | Loot // 10 score, 500 bonus
     | Wounds
     | Health
-    | Keys
-    | Potions
-    | Attack
+    | Keys // 25 score
+    | Potions //50 score
+    | Attack 
     | Defense
-    | Amulet
+    | Amulet //500 score 
+    | Stairs //250 score
+    // Monsters killed, 25 score, 2500 bonus - do I want this per monster type?
+    // Sword acquired, 50 score, 200 bonus
+    // Shields acquired, 100 score, 1000 bonus
+    // Love interest acquired, 1000 score
+    // Traps sprung, -25 score
+    // Doors unlocked, 25 score
+    // Hourglasses acquired, 50 score
 
 type State = 
     {Visited: Set<Location>; 

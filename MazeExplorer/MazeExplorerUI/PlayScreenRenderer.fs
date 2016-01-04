@@ -110,7 +110,7 @@ let renderRoom (location:Location) (exits:Set<Location>) (visited:bool) (visible
 let statusTable = 
     [(ExplorerState.Alive,     (Tiles.fonts.[Colors.Emerald], "Alive!  "));
      (ExplorerState.Dead,      (Tiles.fonts.[Colors.Garnet],  "Dead!   "));
-     (ExplorerState.Win,       (Tiles.fonts.[Colors.Gold],    "Win!    "));
+     (ExplorerState.Exited,    (Tiles.fonts.[Colors.Gold],    "Exited! "));
      (ExplorerState.OutOfTime, (Tiles.fonts.[Colors.Garnet],  "Times Up"))]
     |> Map.ofSeq
 

@@ -10,6 +10,7 @@ type GameState =
     | OptionsScreen of PausedExplorer<Cardinal.Direction, State> option
     | PlayScreen of Explorer<Cardinal.Direction, State>
     | PauseScreen of PausedExplorer<Cardinal.Direction, State>
+    | ScoreScreen of State 
 
 let mutable gameState = TitleScreen
 

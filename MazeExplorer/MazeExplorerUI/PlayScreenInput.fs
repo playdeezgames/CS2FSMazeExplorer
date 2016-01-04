@@ -44,6 +44,9 @@ let openOptions options explorer =
     else
         explorer |> PlayScreen
 
+let quitGame explorer =
+    explorer.State |> ScoreScreen
+
 let handlePlayScreenInput keyCode explorer=
     let command = 
         keyCode
@@ -52,7 +55,7 @@ let handlePlayScreenInput keyCode explorer=
     | External Wait -> 
             false
     | External Quit -> 
-            gameState <- TitleScreen
+            gameState <- explorer |> quitGame
             true
     | External Pause -> 
             gameState <- explorer |> pauseGame GameSettings.options

@@ -10,4 +10,5 @@ let redraw graphics =
     | OptionsScreen _                          -> GameSettings.options |> OptionsScreenRenderer.drawOptionsScreen
     | PlayScreen explorer                      -> explorer |> PlayScreenRenderer.drawGameScreen
     | PauseScreen _                            -> PauseScreenRenderer.drawPauseScreen()
+    | ScoreScreen state                        -> state |> ScoreScreenRenderer.drawScoreScreen
 

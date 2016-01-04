@@ -11,6 +11,7 @@ let keyDown (event:KeyEventArgs) =
     | OptionsScreen pausedExplorer             -> event.KeyCode |> OptionsScreenInput.handleOptionsScreenInput
     | PlayScreen explorer                      -> explorer |> PlayScreenInput.handlePlayScreenInput event.KeyCode
     | PauseScreen pausedExplorer               -> pausedExplorer |> PauseScreenInput.handlePauseScreenInput event.KeyCode
+    | ScoreScreen _                            -> event.KeyCode |> ScoreScreenInput.handleScoreScreenInput
     
 
 

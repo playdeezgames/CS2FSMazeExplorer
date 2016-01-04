@@ -69,6 +69,8 @@
     <Compile Include="PlayScreenInput.fs" />
     <Compile Include="PauseScreenRenderer.fs" />
     <Compile Include="PauseScreenInput.fs" />
+    <Compile Include="ScoreScreenRenderer.fs" />
+    <Compile Include="ScoreScreenInput.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="Program.fs" />

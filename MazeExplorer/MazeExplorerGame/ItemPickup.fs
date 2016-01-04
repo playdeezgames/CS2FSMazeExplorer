@@ -68,6 +68,7 @@ let pickupAmulet eventHandler next state =
 let pickupExit eventHandler next state =
     Exit |> PlaySound |> eventHandler
     state
+    |> setCounter CounterType.Stairs 1
 
 
 

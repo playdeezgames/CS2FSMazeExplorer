@@ -3,10 +3,8 @@
 open State
 open Explorer
 
-let wonGame (explorer:Explorer.Explorer<Cardinal.Direction,State>) =
-    explorer.State.Items
-    |> Map.tryPick (fun k v -> if v = Treasure then Some k else None)
-    |> Option.isNone
+let tookStairs (explorer:Explorer.Explorer<Cardinal.Direction,State>) =
+    (explorer.State |> getCounter Stairs) > 0
 
 let isDead explorer = 
     let wounds = 
@@ -26,7 +24,7 @@ let getTimeLeft explorer =
         timeRemaining
 
 type ExplorerState = 
-    | Win
+    | Exited
     | Alive
     | Dead
     | OutOfTime
@@ -34,8 +32,8 @@ type ExplorerState =
 let getExplorerState explorer = 
     if explorer |> isDead then
         Dead
-    elif explorer |> wonGame then
-        Win
+    elif explorer |> tookStairs then
+        Exited
     elif (explorer |> getTimeLeft) <= 0 then
         OutOfTime
     else
