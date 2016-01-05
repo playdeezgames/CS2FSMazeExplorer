@@ -142,6 +142,30 @@ let (|LotsOfTime|StillTimeLeft|RunningOutOfTime|) timeRemaining =
     else
         RunningOutOfTime
 
+let drawMonsterStats (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
+    let next = explorer.Orientation |> Cardinal.walk explorer.Position
+    if (next |> explorer.State.Visible.Contains) && (next |> explorer.State.Locks.Contains |> not) then
+        explorer.State.Monsters
+        |> Map.tryFind next
+        |> Option.bind (fun instance-> (instance, Monsters.descriptors.[instance.Type]) |> Some)
+        |> Option.bind (fun (instance , descriptor) -> 
+            Tiles.fonts.[Colors.Gold] |> FrameBuffer.renderString (FirstStatsColumn,7) descriptor.Name
+            (instance, descriptor) |> Some)
+        |> Option.bind (fun (instance, descriptor) ->
+            Tiles.fonts.[Colors.Garnet] |> FrameBuffer.renderString (FirstStatsColumn,8) (descriptor.Health - instance.Damage |> sprintf "\u0003%3i")
+            (instance, descriptor) |> Some)
+        |> Option.bind (fun (instance, descriptor) ->
+            ExplorerTiles.Sword |> FrameBuffer.RenderTile (FirstStatsColumn,9)
+            Tiles.fonts.[Colors.Silver] |> FrameBuffer.renderString (FirstStatsColumn+1,9) (descriptor.Attack |> sprintf "%3i")
+            (instance, descriptor) |> Some)
+        |> Option.bind (fun (instance, descriptor) ->
+            ExplorerTiles.Shield |> FrameBuffer.RenderTile (SecondStatsColumn,9)
+            Tiles.fonts.[Colors.Aquamarine] |> FrameBuffer.renderString (SecondStatsColumn+1,9) (descriptor.Defense |> sprintf "%3i")
+            (instance, descriptor) |> Some)
+        |> ignore
+    else
+        ()
+
 let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     Colors.Onyx
     |> FrameBuffer.clear
@@ -161,6 +185,8 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     |> List.iter (fun (c,xy,xform) -> Tiles.fonts.[c] |> FrameBuffer.renderString xy (explorer.State |> xform))
     playScreenTiles
     |> List.iter (fun (t,xy) -> t |> FrameBuffer.RenderTile xy)
+    explorer
+    |> drawMonsterStats
     let (font, text) = statusTable.[explorer |> ExplorerState.getExplorerState]
     font
     |> FrameBuffer.renderString (FirstStatsColumn, 4) text
