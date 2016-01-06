@@ -25,6 +25,7 @@ let addMonsterDamage next damage (state: State) =
     let descriptor = Monsters.descriptors.[monsterInstance.Type]
     if monsterInstance.Damage + damage >= descriptor.Health then
         {state with Monsters = state.Monsters |> Map.remove next}
+        |> incrementKills monsterInstance.Type
     else
         {state with Monsters = state.Monsters |> Map.add next {monsterInstance with Damage = monsterInstance.Damage + damage} }
 

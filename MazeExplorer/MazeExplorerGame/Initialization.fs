@@ -54,7 +54,15 @@ let restart difficultyLevel eventHandler :Explorer<Cardinal.Direction, State>=
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker findAllCardinal
-        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; Locks=Set.empty; Items=Map.empty; Visible=Set.empty; Counters = Map.empty; Monsters = Map.empty; EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} |> initializeCounters)
+        |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; 
+            Locks=Set.empty; 
+            Items=Map.empty; 
+            Visible=Set.empty; 
+            Kills = Map.empty; 
+            Counters = Map.empty; 
+            Monsters = Map.empty; 
+            EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} 
+            |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations  difficultyLevel newExplorer.Maze;

@@ -37,6 +37,7 @@ type State =
     {Visited: Set<Location>; 
     Items: Map<Location,ItemType>; 
     Monsters: Map<Location,Monsters.Instance>;
+    Kills: Map<Monsters.Type, int>;
     Locks: Set<Location>;
     Visible: Set<Location>; 
     Counters : Map<CounterType,int>;
@@ -61,4 +62,11 @@ let initializeCounters state =
     |> setCounter Attack InitialAttack
     |> setCounter Potions InitialPotions
 
-
+let getKills monsterType state =
+    match state.Kills |> Map.tryFind monsterType with
+    | Some value -> value
+    | None       -> 0
+    
+let incrementKills monsterType state =
+    let newValue = (state |> getKills monsterType) + 1
+    {state with Kills = state.Kills |> Map.add monsterType newValue}

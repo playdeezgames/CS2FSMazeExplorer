@@ -155,6 +155,9 @@ let drawMonsterStats (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
             Tiles.fonts.[Colors.Garnet] |> FrameBuffer.renderString (FirstStatsColumn,8) (descriptor.Health - instance.Damage |> sprintf "\u0003%3i")
             (instance, descriptor) |> Some)
         |> Option.bind (fun (instance, descriptor) ->
+            Tiles.fonts.[Colors.Tin] |> FrameBuffer.renderString (SecondStatsColumn,8) (explorer.State |> getKills instance.Type |> sprintf "X%3i")
+            (instance, descriptor) |> Some)
+        |> Option.bind (fun (instance, descriptor) ->
             ExplorerTiles.Sword |> FrameBuffer.RenderTile (FirstStatsColumn,9)
             Tiles.fonts.[Colors.Silver] |> FrameBuffer.renderString (FirstStatsColumn+1,9) (descriptor.Attack |> sprintf "%3i")
             (instance, descriptor) |> Some)
