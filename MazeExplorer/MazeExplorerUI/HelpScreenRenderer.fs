@@ -15,7 +15,15 @@ let helpScreenStrings =
     (Colors.Onyx,(2,11),"Locked Room");
     (Colors.Onyx,(2,12),"Unexplored");
     (Colors.Onyx,(2,13),"Potion");
-    (Colors.Tanzanite,(0,17),"Esc - Go Back")]
+    (Colors.Onyx,(2,14),"Amulet");
+    (Colors.Onyx,(2,15),"Stairs");
+    (Colors.Tanzanite,(0,17),"Esc - Go Back");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 1),"Skeleton");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 2),"Zombie");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 3),"Mummy");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 4),"Ghoul");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 5),"Golem");
+    (Colors.Onyx,(Constants.TileColumns / 2 + 2, 6),"Wizard")]
 
 let helpScreenTiles =
     [(ExplorerTiles.Treasure,(0,1));
@@ -33,8 +41,16 @@ let helpScreenTiles =
     (Tiles.Empty,(0,11));
     (Tiles.room.[(false,true,false,false)],(0,11));
     (Tiles.lock.[false].[(false,true,false,false)],(0,11));
-    (Tiles.NeverVisited,(0,12));
+    (Tiles.Hidden,(0,12));
     (ExplorerTiles.Potion,(0,13));
+    (ExplorerTiles.Amulet,(0,14));
+    (ExplorerTiles.Exit,(0,15));
+    (Tiles.monsters.[Monsters.Skeleton],(Constants.TileColumns/2,1));
+    (Tiles.monsters.[Monsters.Zombie],(Constants.TileColumns/2,2));
+    (Tiles.monsters.[Monsters.Mummy],(Constants.TileColumns/2,3));
+    (Tiles.monsters.[Monsters.Ghoul],(Constants.TileColumns/2,4));
+    (Tiles.monsters.[Monsters.Golem],(Constants.TileColumns/2,5));
+    (Tiles.monsters.[Monsters.Wizard],(Constants.TileColumns/2,6));
     ]
 
 let drawHelpScreen () =

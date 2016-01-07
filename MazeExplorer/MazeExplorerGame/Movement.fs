@@ -14,7 +14,7 @@ let mustUnlock next (explorer: Explorer<Cardinal.Direction, State>) =
 let unlockLocation eventHandler next explorer =
     PlaySound UnlockDoor
     |> eventHandler
-    {explorer with State = explorer.State |> updateLock next}
+    {explorer with State = explorer.State |> updateLock next |> changeCounter DoorsUnlocked 1}
 
 let mustFight next (explorer: Explorer<Cardinal.Direction, State>) =
     next

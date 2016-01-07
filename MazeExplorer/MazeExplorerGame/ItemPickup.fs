@@ -19,6 +19,7 @@ let pickupTrap eventHandler next state =
     let woundedState = 
         state
         |> changeCounter Wounds 1
+        |> changeCounter TrapsSprung 1
     if (woundedState |> getCounter Wounds ) >= (woundedState |> getCounter Health) && (woundedState |> getCounter Potions) > 0 then
         woundedState
         |> changeCounter Potions -1
@@ -31,29 +32,35 @@ let pickupKey eventHandler next state =
     |> eventHandler
     state
     |> changeCounter Keys 1
+    |> changeCounter KeysAcquired 1
 
 let pickupSword eventHandler next state =
     PlaySound AcquireSword
     |> eventHandler
     state
     |> changeCounter Attack 1
+    |> changeCounter SwordsAcquired 1
 
 let pickupShield eventHandler next state =
     PlaySound AcquireShield
     |> eventHandler
     state
     |> changeCounter Defense 1
+    |> changeCounter ShieldsAcquired 1
 
 let pickupPotion eventHandler next state =
     PlaySound AcquirePotion
     |> eventHandler
     state
     |> changeCounter Potions 1
+    |> changeCounter PotionsAcquired 1
 
 let pickupHourglass eventHandler next state =
     PlaySound AcquireHourglass
     |> eventHandler
     {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
+    |> changeCounter HourglassesAcquired 1
+
 
 let pickupLoveInterest eventHandler next state =
     LoveInterest |> PlaySound |> eventHandler
