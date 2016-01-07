@@ -43,8 +43,8 @@ let calculateDamage attack defense =
     else 
         0
 
-let adjustPlayerDefense defense attack =
-    if defense > 0 && Utility.random.Next(DefenseSavingThrow) < attack then 
+let adjustPlayerDefense defense attack savingThrow=
+    if defense > 0 && Utility.random.Next(savingThrow) < attack then 
         defense - 1 
     else 
         defense
@@ -63,7 +63,7 @@ let fightLocation eventHandler next (explorer: Explorer<Cardinal.Direction, Stat
     let monsterAttack, monsterDefense = explorer.State |> getMonsterStats next
     let monsterDamage = calculateDamage playerAttack monsterDefense
     let playerDamage = calculateDamage monsterAttack playerDefense
-    let newPlayerDefense = adjustPlayerDefense playerDefense monsterAttack
+    let newPlayerDefense = adjustPlayerDefense playerDefense monsterAttack (explorer.State |> getCounter DefenseSavingThrow)
     let sfx, damagedState = explorer.State |> takePlayerDamage playerDamage
     sfx |> eventHandler
     {explorer with 

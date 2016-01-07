@@ -58,7 +58,7 @@ let pickupPotion eventHandler next state =
 let pickupHourglass eventHandler next state =
     PlaySound AcquireHourglass
     |> eventHandler
-    {state with EndTime = TimeBonusPerHourglass |> state.EndTime.AddSeconds}
+    {state with EndTime = (state |> getCounter TimeBonus) |> float |> state.EndTime.AddSeconds}
     |> changeCounter HourglassesAcquired 1
 
 

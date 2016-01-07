@@ -134,10 +134,10 @@ let playScreenTiles =
      (ExplorerTiles.Sword,  (FirstStatsColumn  ,2));
      (ExplorerTiles.Shield, (SecondStatsColumn ,2))]
 
-let (|LotsOfTime|StillTimeLeft|RunningOutOfTime|) timeRemaining =
-    if timeRemaining > TimeLimit / 2 then
+let (|LotsOfTime|StillTimeLeft|RunningOutOfTime|) (timeRemaining, timeLimit) =
+    if timeRemaining > timeLimit / 2 then
         LotsOfTime
-    elif timeRemaining > TimeLimit / 4 then
+    elif timeRemaining > timeLimit / 4 then
         StillTimeLeft
     else
         RunningOutOfTime
@@ -194,7 +194,7 @@ let drawGameScreen (explorer:Explorer.Explorer<Cardinal.Direction, State>) =
     font
     |> FrameBuffer.renderString (FirstStatsColumn, 4) text
     let timeRemaining = explorer |> ExplorerState.getTimeLeft
-    match explorer |> ExplorerState.getExplorerState, timeRemaining with
+    match explorer |> ExplorerState.getExplorerState, (timeRemaining, explorer.State |> getCounter State.TimeLimit ) with
     | Alive, LotsOfTime       -> Some Tiles.fonts.[Colors.Emerald]
     | Alive, StillTimeLeft    -> Some Tiles.fonts.[Colors.Gold]
     | Alive, RunningOutOfTime -> Some Tiles.fonts.[Colors.Garnet]

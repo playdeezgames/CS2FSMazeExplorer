@@ -8,7 +8,7 @@ let fixedItemList difficultyLevel =
         difficultySettings.[difficultyLevel]
     [(LoveInterest,1);
     (ItemType.Amulet,1);
-    (Potion,5);
+    (Potion,difficultySetting.Potions);
     (Exit,1);
     (Hourglass, difficultySetting.Hourglasses);
     (Sword, difficultySetting.Swords)]

@@ -50,24 +50,29 @@ let findAllCardinal = Neighbor.findAll Cardinal.walk Cardinal.values
 let restart difficultyLevel eventHandler :Explorer<Cardinal.Direction, State>= 
     let gridLocations = 
         makeGrid (MazeColumns, MazeRows)
+    let difficultySetting = Difficulty.difficultySettings.[difficultyLevel]
     let newExplorer = 
         gridLocations
         |> Maze.makeEmpty
         |> Maze.generate Utility.picker findAllCardinal
         |> createExplorer (fun m l -> (m.[l] |> Set.count) > 1) Cardinal.values ({Visited=Set.empty; 
-            Locks=Set.empty; 
-            Items=Map.empty; 
-            Visible=Set.empty; 
-            Kills = Map.empty; 
-            Counters = Map.empty; 
-            Monsters = Map.empty; 
-            EndTime=System.DateTime.Now.AddSeconds(TimeLimit |> float)} 
-            |> initializeCounters)
+                                                                Locks=Set.empty; 
+                                                                Items=Map.empty; 
+                                                                Visible=Set.empty; 
+                                                                Kills = Map.empty; 
+                                                                Counters = Map.empty;
+                                                                Monsters = Map.empty; 
+                                                                EndTime=System.DateTime.Now.AddSeconds (difficultySetting.TimeLimit |> float)} 
+                                                                |> initializeCounters)
     {newExplorer with 
         State = {newExplorer.State with 
                     Items = itemLocations  difficultyLevel newExplorer.Maze;
                     Visible = visibleLocations (newExplorer.Position, newExplorer.Orientation, newExplorer.Maze); 
-                    Visited = [newExplorer.Position] |> Set.ofSeq}}
+                    Visited = [newExplorer.Position] |> Set.ofSeq}
+                    |> setCounter TimeBonus difficultySetting.TimeBonus
+                    |> setCounter TimeLimit difficultySetting.TimeLimit
+                    |> setCounter Health difficultySetting.InitialHealth
+                    |> setCounter DefenseSavingThrow difficultySetting.DefenseSavingThrow}
     |> addMonsters (fun n->Utility.random.Next(n))
     |> addLocks Utility.pickMultiple
 

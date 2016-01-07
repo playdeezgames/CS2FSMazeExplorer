@@ -32,6 +32,9 @@ type CounterType =
     | TrapsSprung//-25
     | DoorsUnlocked//25
     | HourglassesAcquired//50
+    | TimeBonus
+    | TimeLimit
+    | DefenseSavingThrow
 
 type State = 
     {Visited: Set<Location>; 
@@ -58,7 +61,6 @@ let changeCounter counterType delta  (state:State)=
 let initializeCounters state =
     state
     |> setCounter Wounds InitialWounds
-    |> setCounter Health InitialHealth
     |> setCounter Attack InitialAttack
     |> setCounter Potions InitialPotions
 
