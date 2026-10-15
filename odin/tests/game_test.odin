@@ -147,7 +147,18 @@ same_seed_same_game :: proc(t: ^testing.T) {
 	testing.expect(t, a^ != b^)
 }
 
-// Q4 (docs/PORT.md): measured, not guarded. Records how many dead ends mazes have and how often a
+@(test)
+q4_guard_keeps_the_exit :: proc(t: ^testing.T) {
+	list := [?]game.Item_Type{.Love_Interest, .Amulet, .Potion, .Exit, .Hourglass, .Sword}
+	game.keep_exit(list[:], 4) // fits: unchanged
+	testing.expect_value(t, list[3], game.Item_Type.Exit)
+	game.keep_exit(list[:], 3) // would be dropped: moved to the front
+	testing.expect_value(t, list, [6]game.Item_Type{.Exit, .Love_Interest, .Amulet, .Potion, .Hourglass, .Sword})
+	game.keep_exit(list[:], 1) // already first
+	testing.expect_value(t, list[0], game.Item_Type.Exit)
+}
+
+// Q4 (docs/PORT.md): measured, then guarded by keep_exit. Records how many dead ends mazes have and how often a
 // fixed item (the Exit above all) is dropped. The Exit is the only one that makes a run unwinnable.
 @(test)
 measure_q4_missing_fixed_items :: proc(t: ^testing.T) {

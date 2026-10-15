@@ -50,9 +50,8 @@ pick_variable_item :: proc(r: ^Rng) -> Item_Type {
 	return .Key
 }
 
-// ItemGeneration.fixedItemList, in the original order. QUIRK Q4: the caller truncates this list
-// to the number of dead ends, so a maze with too few dead ends silently loses the items at the end
-// (Swords, then Hourglasses, then the Exit).
+// ItemGeneration.fixedItemList, in the original order. Q4: the caller truncates this list to the
+// number of dead ends and keeps the Exit (see new_game), so the items at the end are lost first.
 fixed_item_list :: proc(difficulty: Difficulty, out: ^[MAZE_CELLS]Item_Type) -> int {
 	s := DIFFICULTY_SETTINGS[difficulty]
 	n := 0
@@ -69,6 +68,19 @@ fixed_item_list :: proc(difficulty: Difficulty, out: ^[MAZE_CELLS]Item_Type) -> 
 	add(out, &n, .Hourglass, s.hourglasses)
 	add(out, &n, .Sword, s.swords)
 	return n
+}
+
+// Q4 guard: a maze with too few dead ends only has room for the first `count` fixed items, which
+// would drop the Exit and make it unwinnable. Move the Exit to the front so it is the last thing
+// lost. Does nothing when the Exit already fits, so no measured maze changes.
+keep_exit :: proc(fixed: []Item_Type, count: int) {
+	if count <= 0 {return}
+	for i in count ..< len(fixed) {
+		if fixed[i] != .Exit {continue}
+		copy(fixed[1:i + 1], fixed[0:i])
+		fixed[0] = .Exit
+		return
+	}
 }
 
 shuffle_items :: proc(r: ^Rng, items: []Item_Type) {
@@ -117,6 +129,7 @@ new_game :: proc(g: ^Game, difficulty: Difficulty, seed: u64, now_ms: f64) {
 	}
 	fixed: [MAZE_CELLS]Item_Type
 	fixed_count := min(fixed_item_list(difficulty, &fixed), dead_end_count)
+	keep_exit(fixed[:], fixed_count)
 	list: [MAZE_CELLS]Item_Type
 	for i in 0 ..< fixed_count {
 		list[i] = fixed[i]
