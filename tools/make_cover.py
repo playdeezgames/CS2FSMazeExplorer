@@ -12,13 +12,30 @@ def read_ppm(path):
     parts = d.split(b"\n", 3)
     w, h = map(int, parts[1].split())
     return w, h, parts[3]
-W, H, S = 630, 500, 2
-img = bytearray(b"\x10\x10\x10" * (W * H))
+W, H = 630, 500
+img = bytearray(b"\x18\x18\x20" * (W * H))
+src = open(os.path.join(here, "..", "odin", "ui", "patterns_gen.odin")).read()
+font = [[int(x, 16) for x in row.split(",")] for row in
+        __import__("re").findall(r"\{((?:0x[0-9a-f]{2},? ?){8})\}, // \d+", src.split("FONT_PATTERNS")[1])]
+def text(s, x, y, k, rgb):
+    for ch in s:
+        pat = font[ord(ch)]
+        for r in range(8):
+            for c in range(8):
+                if pat[r] & (0x80 >> c):
+                    for dy in range(k):
+                        for dx in range(k):
+                            o = ((y + r * k + dy) * W + x + c * k + dx) * 3
+                            img[o:o + 3] = bytes(rgb)
+        x += 8 * k
+def centred(s, y, k, rgb): text(s, (W - len(s) * 8 * k) // 2, y, k, rgb)
+centred("MAZE EXPLORER", 24, 5, (0xf0, 0xc0, 0x30))
+centred("of SPLORR!!", 76, 4, (0xc0, 0xc0, 0xd0))
 tmp = tempfile.mkdtemp()
 fp = os.path.join(tmp, "f.ppm")
 frame(7, "12,4,2,1,3,4,1,3,2,2,3,4,1,2,4,1,4,1,4,3,1,3,2,3,3,3,3,1,1,4,4,3,3,4,2,4,4,3,4,1,4,1,2,1,3,3,4,2,2,4,1,2,2,4,2,4,3,2,3,3,3,3,1,4,1,2,1,1,1,2,1,1,3,1,3,4,2,4,3,2,2,4,3,2,2,4,1,1,2,4,2,2,3,2,4,2,4,2,4,3,2,3,4,3,3,1,2,1,1,4,2,4,3,1,3,1,1,3,2,4,3,3,1,2,3,1,2,3,1,1,4,3,3,3,3,3,2,3,4,4,3,1,3,2,1,3,3,2,3,2,3,4,2,2,2,1,4,2,4,3,4,4,2,3,1,3,4,2,4,3,4,2,2,4,2,1,2,3,3,2,2,3,3,4,2,3,4,2,1,3,1,4,4,1,4,3,3,3,4,3,1,3,4,3,1,3,2,2,3,3,4,1,1,3,2,1,2,4,4,2,1,2,1,4,1,2,2,1,4,2,4,2,4,2,3,1,1,2,3,3,3,1,3,4,3,2,2,1,1,2,2,3,2,1,1,1,4,3,4,3,1", fp)
 w, h, px = read_ppm(fp)
-ox, oy = (W - w * 2) // 2, (H - h * 2) // 2
+ox, oy = (W - w * 2) // 2, 130
 for y in range(h * 2):
     for x in range(w * 2):
         i = ((y // 2) * w + x // 2) * 3
