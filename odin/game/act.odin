@@ -34,7 +34,6 @@ act :: proc(g: ^Game, command: Command, now_ms: f64) -> Sfx {
 	switch command.kind {
 	case .Turn: return turn_action(g, command.direction)
 	case .Move: return move_action(g)
-	case .Drink: return .None // QUIRK Q1
 	}
 	return .None
 }

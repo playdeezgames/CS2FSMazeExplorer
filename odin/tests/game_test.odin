@@ -498,17 +498,6 @@ time_runs_out_and_truncates :: proc(t: ^testing.T) {
 }
 
 @(test)
-drink_command_does_nothing :: proc(t: ^testing.T) { // Q1
-	g := new(game.Game)
-	defer free(g)
-	corridor(g, 2)
-	g.counters[.Wounds] = 5
-	before := g^
-	testing.expect_value(t, game.act(g, {kind = .Drink}, NOW), game.Sfx.None)
-	testing.expect(t, g^ == before)
-}
-
-@(test)
 score_arithmetic :: proc(t: ^testing.T) {
 	g := new(game.Game)
 	defer free(g)

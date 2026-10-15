@@ -138,7 +138,6 @@ Explorer_State :: enum u8 {
 Command_Kind :: enum u8 {
 	Turn,
 	Move,
-	Drink, // QUIRK Q1: exists in the F# and does nothing
 }
 
 Command :: struct {
