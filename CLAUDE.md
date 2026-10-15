@@ -13,6 +13,7 @@ Decisions are the user's and are logged in `docs/PORT.md`; the milestone plan is
 ```bash
 tools/test.sh                      # everything; must end with ALL TESTS PASSED
 tools/build_web.sh                 # build/web: wasm, odin.js, page, sfx/ (serve with python3 -m http.server -d build/web PORT)
+tools/ship.sh [--push]             # test, build, zip; uploads to itch.io only with --push (also ./shippit.sh)
 tools/parity.sh                    # native replay vs wasm under node: same digest for the same seed and keys
 python3 tools/gen_patterns.py      # regenerate odin/ui/patterns_gen.odin from the F# pattern sources (--check to verify)
 tools/check_patterns.sh            # run the original F# pattern files under `dotnet fsi` and compare (297 patterns)

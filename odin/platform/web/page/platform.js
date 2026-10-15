@@ -181,8 +181,23 @@
 			flushSettings();
 		}
 
+		// fullscreen is a page feature (key F or the corner button), not a game key
+		function toggleFullscreen() {
+			try {
+				if (document.fullscreenElement) document.exitFullscreen();
+				else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+			} catch (err) { /* refused: stay windowed */ }
+			canvas.focus();
+		}
+		const fsButton = document.getElementById("fs");
+		if (fsButton) {
+			if (!document.documentElement.requestFullscreen) fsButton.style.display = "none";
+			fsButton.addEventListener("click", function (e) { e.preventDefault(); unlockAudio(); toggleFullscreen(); });
+		}
+
 		window.addEventListener("keydown", function (e) {
 			if (e.ctrlKey || e.metaKey || e.altKey) return;
+			if ((e.key === "f" || e.key === "F") && !e.repeat) { e.preventDefault(); toggleFullscreen(); return; }
 			const code = keyOf(e);
 			if (logKeys) console.log("key", e.key, e.code, "->", code);
 			if (!code) return;

@@ -57,7 +57,8 @@ Each milestone ends with `tools/test.sh` passing and a PORT.md log entry.
 - Soak test: random play over many seeds never hangs or panics.
 - **Done when** `tools/test.sh` ends with `ALL TESTS PASSED`.
 
-### M7: release prep (needs the user)
+### M7: release prep (in progress, 2026-10-15)
+Done: fullscreen (F key and corner button), `tools/ship.sh` (`shippit.sh` links to it; pushes only with `--push`), `tools/make_cover.py` (assets/cover.png), `ITCH_DESCRIPTION.md`, vault page. Left for the user: listen to the sounds, create the itch page, check the slug `maze-explorer-of-splorr`, look at the cover, say yes to the push.
 - Cover image, itch.io page copy, credits, `shippit.sh` that tests, builds, zips and pushes only with `--push` (vault: `Shipping to itch.io`).
 - Fullscreen button/key on the page. No native client (D7).
 - Update the vault: add `Games/Maze Explorer of SPLORR!!.md` and a Home.md entry (the vault is a separate repo; ask before committing there).

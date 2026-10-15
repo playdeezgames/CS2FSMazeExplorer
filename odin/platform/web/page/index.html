@@ -10,6 +10,10 @@
   canvas { outline: none; touch-action: none; background: #000; }
   #msg { position: fixed; left: 0; right: 0; top: 40%; text-align: center; color: #ddd; font: 16px monospace; }
 
+  #fs { position: fixed; right: 4px; top: 4px; width: 32px; height: 32px; padding: 0; opacity: 0.5;
+    font: bold 16px monospace; border: 1px solid #666; border-radius: 6px; background: #2a2a2a; color: #eee; }
+  #fs:hover { opacity: 1; }
+
   /* touch controls: a d-pad and the original's keys, shown on touch devices or with ?touch=1 */
   .touch { position: fixed; display: none; gap: 1.6vmin; padding: 1vmin; touch-action: none; }
   .touch.on { display: grid; }
@@ -34,6 +38,7 @@
 </head>
 <body>
 <canvas id="screen" width="256" height="144" tabindex="0"></canvas>
+<button id="fs" title="Fullscreen (F)">&#x26F6;</button>
 <div id="msg">loading...</div>
 <div id="pad" class="touch">
   <button class="up" data-key="Up">&#9650;</button>
