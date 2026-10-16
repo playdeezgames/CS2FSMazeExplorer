@@ -18,7 +18,9 @@ tools/parity.sh                    # native replay vs wasm under node: same dige
 python3 tools/gen_patterns.py      # regenerate odin/ui/patterns_gen.odin from the F# pattern sources (--check to verify)
 tools/check_patterns.sh            # run the original F# pattern files under `dotnet fsi` and compare (297 patterns)
 node tools/gen_sfx.js --sfxr DIR   # regenerate odin/platform/web/page/sfx/*.wav (DIR = jsfxr's sfxr.js + riffwave.js from sfxr.me; not kept in the repo)
-node tools/wasm_node.js dump SEED KEYS out.ppm [STEP_MS]   # a frame from the wasm build without a browser
+node tools/wasm_node.js dump SEED KEYS out.ppm [STEP_MS]   # a frame from the wasm build without a browser (needs node)
+build/replay SEED KEYS STEP_MS out.ppm   # the same frame from the native replay (no node); `odin build odin/tools/replay -out:build/replay`
+python3 tools/make_cover.py [OUT]  # assets/cover.png (630x500); python3 tools/make_screenshots.py  # assets/screenshots/ (both use the native replay)
 ```
 
 Odin is `/home/yermom/ODIN/odin` (`dev-2026-07-nightly`). One test: `odin test odin/tests -define:ODIN_TEST_THREADS=1 -define:ODIN_TEST_NAMES=tests.NAME -out:build/tests.bin` (run from the repo root: two tests read `odin/platform/web/page`). `ODIN_TEST_THREADS=1` is required (see the vault's `Gotchas.md`). Page options: `?seed=N` fixes the first maze, `?play=1` skips the title, `?touch=1` shows touch controls, `?log=1` logs keys.

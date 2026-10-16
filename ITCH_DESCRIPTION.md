@@ -1,3 +1,13 @@
+Page: https://thegrumpygamedev.itch.io/maze-explorer-of-splorr
+
+Pasted in by hand; nothing here is published by the repo. Cover: `assets/cover.png`. Screenshots: `assets/screenshots/`.
+
+**Short description**
+
+A strict, timed maze crawl: locks and keys, monsters, a clock. An exact port of an old F# sample game.
+
+**Body**
+
 **Maze Explorer of SPLORR!!**
 
 A small, strict maze crawl against the clock. Find your way through a maze you can only see a little of at a time, open locks, fight what lives there, pick up what you can carry, and reach the exit before the time runs out.

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""630x500 itch.io cover from real wasm frames (needs build/web; run tools/build_web.sh first).
-Usage: tools/make_cover.py OUT.png   (writes ppm frames via tools/wasm_node.js, upscales by 2, no deps)"""
+"""630x500 itch.io cover from real wasm frames .
+Usage: tools/make_cover.py OUT.png   (writes ppm frames via the native replay, upscales by 2, no deps)"""
 import subprocess, sys, zlib, struct, os, tempfile
 out = sys.argv[1] if len(sys.argv) > 1 else "assets/cover.png"
 here = os.path.dirname(os.path.abspath(__file__))
 def frame(seed, keys, path):
-    subprocess.run(["node", os.path.join(here, "wasm_node.js"), "dump", str(seed), keys, path], check=True,
-                   stdout=subprocess.DEVNULL)
+    # the native replay draws the same frames as the wasm build (tools/parity.sh); no node needed
+    root = os.path.join(here, "..")
+    odin = os.environ.get("ODIN", os.path.expanduser("~/ODIN/odin"))
+    subprocess.run([odin, "build", os.path.join(root, "odin", "tools", "replay"), "-out:" + os.path.join(root, "build", "replay")],
+                   check=True, stdout=subprocess.DEVNULL)
+    subprocess.run([os.path.join(root, "build", "replay"), str(seed), keys, "900", path], check=True, stdout=subprocess.DEVNULL)
 def read_ppm(path):
     d = open(path, "rb").read()
     parts = d.split(b"\n", 3)

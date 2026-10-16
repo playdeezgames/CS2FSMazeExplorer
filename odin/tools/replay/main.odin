@@ -6,7 +6,9 @@ package replay
 // every frame drawn. tools/wasm_node.js does the same through the wasm build; the output must be
 // identical.
 //
-//   replay <seed> <comma separated ui.Key numbers> [step_ms]
+//   replay <seed> <comma separated ui.Key numbers> [step_ms] [out.ppm]
+//
+// With out.ppm it also writes the last frame as a PPM picture (no node needed).
 
 import "core:fmt"
 import "core:os"
@@ -49,6 +51,17 @@ main :: proc() {
 		if ui.app_draw(app, now) {
 			digest = ui.digest_fold(digest, ui.frame_hash64(&app.fb))
 			frames += 1
+		}
+	}
+	if len(os.args) > 4 {
+		ppm := make([dynamic]byte)
+		append(&ppm, ..transmute([]byte)fmt.tprintf("P6\n%d %d\n255\n", ui.FRAME_W, ui.FRAME_H))
+		for px in app.fb.pixels {
+			append(&ppm, byte(px), byte(px >> 8), byte(px >> 16)) // bytes are R, G, B, A in memory
+		}
+		if err := os.write_entire_file(os.args[4], ppm[:]); err != nil {
+			fmt.eprintln("cannot write", os.args[4])
+			os.exit(1)
 		}
 	}
 	fmt.printf("digest %016x\n", digest)
