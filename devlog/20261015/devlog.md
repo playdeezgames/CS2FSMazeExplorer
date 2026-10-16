@@ -6,8 +6,8 @@ This is an exact port. The rules, the difficulty tables, the 8 by 8 art and the 
 
 What is new: it runs as WebAssembly (Odin), it has touch buttons for phones, fullscreen on the F key, and the sounds are new, made with jsfxr instead of the original wav files. Add `?seed=N` to the address to play the same maze again.
 
-What is not new, on purpose: the quirks. The original has a few. A Drink command that does nothing, a pause setting that blocks help and options while a game is running, and monsters you cannot hurt at all until you find better gear (a Golem takes nothing from a weak sword). The F# code could in theory drop the exit from a maze with too few dead ends; I measured 900 mazes and it never did. I kept all of it, wrote each one down, and will deal with them one at a time.
+The quirks. The original has a few, and I went through them one at a time. Fixed: a Drink command that did nothing is gone (potions still drink themselves when they would save you), the clock no longer eats the last second, and a maze with too few dead ends can no longer lose its exit (it never happened in 900 mazes, but now it cannot). Kept on purpose: monsters you cannot hurt until you have better gear, a locked exit now and then, a random start cell, the original art, and the rule that turns the pause keys off when Pause Game is off.
 
 Under the hood: 50 tests, the 297 original art patterns checked against the F# source, and a check that the wasm build and a native build draw the same frames for the same keys.
 
-Still on the list: the quirks, and a proper listen to those sounds.
+Still on the list: a proper listen to those sounds, and whatever you find when you play it.
