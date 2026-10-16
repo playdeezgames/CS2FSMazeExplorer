@@ -3,11 +3,14 @@ package game
 // Ported from Action.fs, Movement.fs, Update.fs, ItemPickup.fs and ExplorerState.fs.
 // The wall clock is always an argument (`now_ms`); nothing here reads a clock.
 
-// ExplorerState.getTimeLeft. QUIRK Q3: whole seconds, truncated toward zero, clamped at 0, so the
-// last second never shows.
+// ExplorerState.getTimeLeft. Q3 (decided): whole seconds rounded up and clamped at 0, so the
+// clock reads 1 for the last second and time is out exactly at 0 (the F# truncated and lost it).
 time_left_seconds :: proc(g: ^Game, now_ms: f64) -> int {
-	seconds := int((g.end_time_ms - now_ms) / 1000)
-	return max(seconds, 0)
+	remaining := g.end_time_ms - now_ms
+	if remaining <= 0 {return 0}
+	seconds := int(remaining / 1000)
+	if f64(seconds) * 1000 < remaining {seconds += 1}
+	return seconds
 }
 
 // Pausing keeps the remaining time: the page moves the deadline by the paused duration on resume.

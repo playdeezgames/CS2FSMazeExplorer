@@ -143,9 +143,10 @@ redraws_only_when_the_second_changes :: proc(t: ^testing.T) {
 	app.dirty = true
 	testing.expect(t, ui.app_draw(app, NOW)) // shows 480
 	testing.expect(t, !ui.app_draw(app, NOW))
-	testing.expect(t, ui.app_draw(app, NOW + 200)) // 479.8 truncates to 479 (Q3)
-	testing.expect(t, !ui.app_draw(app, NOW + 900)) // 479.1: still 479
-	testing.expect(t, ui.app_draw(app, NOW + 1200)) // 478.8: 478
+	testing.expect(t, !ui.app_draw(app, NOW + 200)) // 479.8 rounds up to 480 (Q3)
+	testing.expect(t, ui.app_draw(app, NOW + 1200)) // 478.8: 479
+	testing.expect(t, !ui.app_draw(app, NOW + 1900)) // 478.1: still 479
+	testing.expect(t, ui.app_draw(app, NOW + 2200)) // 477.8: 478
 }
 
 @(test)

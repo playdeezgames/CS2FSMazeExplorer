@@ -494,18 +494,21 @@ defense_wears_down_by_saving_throw :: proc(t: ^testing.T) {
 }
 
 @(test)
-time_runs_out_and_truncates :: proc(t: ^testing.T) {
+time_runs_out_rounded_up :: proc(t: ^testing.T) {
 	g := new(game.Game)
 	defer free(g)
 	corridor(g, 2)
 	testing.expect_value(t, game.time_left_seconds(g, NOW), 480)
-	testing.expect_value(t, game.time_left_seconds(g, NOW + 500), 479) // truncated, Q3
-	testing.expect_value(t, game.time_left_seconds(g, NOW + 479_999), 0)
-	testing.expect_value(t, game.explorer_state(g, NOW + 479_999), game.Explorer_State.Out_Of_Time)
-	testing.expect_value(t, game.time_left_seconds(g, NOW + 999_999), 0)
-	testing.expect_value(t, game.act(g, {kind = .Move}, NOW + 479_999), game.Sfx.None)
-	game.shift_deadline(g, 10_000) // resume after a pause of ten seconds
+	testing.expect_value(t, game.time_left_seconds(g, NOW + 500), 480) // rounded up, Q3
+	testing.expect_value(t, game.time_left_seconds(g, NOW + 1_000), 479)
+	testing.expect_value(t, game.time_left_seconds(g, NOW + 479_999), 1) // the last second shows
 	testing.expect_value(t, game.explorer_state(g, NOW + 479_999), game.Explorer_State.Alive)
+	testing.expect_value(t, game.time_left_seconds(g, NOW + 480_000), 0)
+	testing.expect_value(t, game.explorer_state(g, NOW + 480_000), game.Explorer_State.Out_Of_Time)
+	testing.expect_value(t, game.time_left_seconds(g, NOW + 999_999), 0)
+	testing.expect_value(t, game.act(g, {kind = .Move}, NOW + 480_000), game.Sfx.None)
+	game.shift_deadline(g, 10_000) // resume after a pause of ten seconds
+	testing.expect_value(t, game.explorer_state(g, NOW + 480_000), game.Explorer_State.Alive)
 }
 
 @(test)
