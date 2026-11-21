@@ -8,6 +8,8 @@ A strict, timed maze crawl: locks and keys, monsters, a clock. An exact port of 
 
 **Body**
 
+**Latest version:** https://playdeezgames.github.io/CS2FSMazeExplorer/
+
 **Maze Explorer of SPLORR!!**
 
 A small, strict maze crawl against the clock. Find your way through a maze you can only see a little of at a time, open locks, fight what lives there, pick up what you can carry, and reach the exit before the time runs out.
