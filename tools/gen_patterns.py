@@ -52,7 +52,7 @@ def collect():
     assert char_order == ["character%d" % i for i in range(256)]
 
     # which character pattern each code point uses (FontTiles.fs; note the original maps \u0010
-    # to character6, not character16: docs/PORT.md Q11)
+    # to character6, not character16: design/PORT.md Q11)
     font = read("FontTiles.fs")
     pairs = re.findall(r"\('\\u([0-9A-F]{4})',CharacterPatterns\.(character\d+)\)", font)
     assert len(pairs) == 256 and [int(h, 16) for h, _ in pairs] == list(range(256))

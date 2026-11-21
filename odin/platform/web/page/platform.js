@@ -4,7 +4,7 @@
 // ?touch=1 shows the touch controls on any device; ?log=1 logs every key.
 
 (function () {
-	const W = 256, H = 144;   // 32 by 18 cells of 8 by 8 pixels (docs/PORT.md D4)
+	const W = 256, H = 144;   // 32 by 18 cells of 8 by 8 pixels (design/PORT.md D4)
 	const params = new URLSearchParams(location.search);
 	const logKeys = params.get("log") === "1";
 	const touch = params.get("touch") === "1" ||
@@ -149,7 +149,7 @@
 		const [lo, hi] = seedFromPage();
 		ex.platform_init(lo, hi);
 
-		// options and best scores (docs/PORT.md D11); every read is validated by the game
+		// options and best scores (design/PORT.md D11); every read is validated by the game
 		const SETTINGS_KEY = "mex:settings";
 		function storageGet() { try { return window.localStorage.getItem(SETTINGS_KEY); } catch (e) { return null; } }
 		function storageSet(v) { try { window.localStorage.setItem(SETTINGS_KEY, v); return true; } catch (e) { return false; } }

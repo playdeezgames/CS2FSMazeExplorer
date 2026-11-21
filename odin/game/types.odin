@@ -97,7 +97,7 @@ Difficulty_Settings :: struct {
 	defense_saving_throw: int,
 }
 
-// Constants.fs and Difficulty.fs, exactly (docs/PORT.md D13).
+// Constants.fs and Difficulty.fs, exactly (design/PORT.md D13).
 DIFFICULTY_SETTINGS := [Difficulty]Difficulty_Settings {
 	.Easy   = {hourglasses = 6, potions = 6, swords = 5, time_limit = 600, time_bonus = 120, initial_health = 10, defense_saving_throw = 6},
 	.Normal = {hourglasses = 5, potions = 5, swords = 4, time_limit = 480, time_bonus = 90, initial_health = 7, defense_saving_throw = 4},

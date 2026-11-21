@@ -10,7 +10,7 @@ odin/
   ui/            framebuffer, tile/pattern data, font, screens, input mapping, options save
   platform/web/  #+build js, exports + index.html + audio/touch glue
 tools/           test.sh, build.sh, wasm parity + frame dump scripts
-docs/            PORT.md, PORT_PLAN.md
+design/            PORT.md, PORT_PLAN.md
 ```
 
 Packages import each other by relative path (`import "../game"`), as HamQuest does, so no collection flag is needed. Run tests with `-define:ODIN_TEST_THREADS=1`, put `#+build !js` on test files, and make `tools/test.sh` also `odin check -target:js_wasm32` every package (catches stray `core:os`).

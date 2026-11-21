@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Maze Explorer of SPLORR!!</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #101010; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; }
+  canvas { outline: none; touch-action: none; background: #000; }
+  #msg { position: fixed; left: 0; right: 0; top: 40%; text-align: center; color: #ddd; font: 16px monospace; }
+
+  #fs { position: fixed; right: 4px; top: 4px; width: 32px; height: 32px; padding: 0; opacity: 0.5;
+    font: bold 16px monospace; border: 1px solid #666; border-radius: 6px; background: #2a2a2a; color: #eee; }
+  #fs:hover { opacity: 1; }
+
+  /* touch controls: a d-pad and the original's keys, shown on touch devices or with ?touch=1 */
+  .touch { position: fixed; display: none; gap: 1.6vmin; padding: 1vmin; touch-action: none; }
+  .touch.on { display: grid; }
+  .touch button {
+    font: bold 14px monospace; width: 62px; height: 48px; border-radius: 10px; padding: 0;
+    border: 2px solid #666; background: #2a2a2a; color: #eee; touch-action: none;
+  }
+  .touch button:active { background: #555; }
+  #pad { grid-template-columns: repeat(3, 62px); }
+  #pad .up { grid-column: 2; grid-row: 1; }
+  #pad .left { grid-column: 1; grid-row: 2; }
+  #pad .right { grid-column: 3; grid-row: 2; }
+  #pad .down { grid-column: 2; grid-row: 3; }
+  #acts { grid-template-columns: repeat(2, 62px); }
+  /* landscape: d-pad on the left edge, keys on the right edge, vertically centred */
+  body.landscape #pad { left: 0; top: 50%; transform: translateY(-50%); }
+  body.landscape #acts { right: 0; top: 50%; transform: translateY(-50%); }
+  /* portrait: both under the picture */
+  body.portrait #pad { left: 1vw; bottom: 1vw; }
+  body.portrait #acts { right: 1vw; bottom: 1vw; }
+</style>
+</head>
+<body>
+<canvas id="screen" width="256" height="144" tabindex="0"></canvas>
+<button id="fs" title="Fullscreen (F)">&#x26F6;</button>
+<div id="msg">loading...</div>
+<div id="pad" class="touch">
+  <button class="up" data-key="Up">&#9650;</button>
+  <button class="left" data-key="Left">&#9664;</button>
+  <button class="right" data-key="Right">&#9654;</button>
+  <button class="down" data-key="Down">&#9660;</button>
+</div>
+<div id="acts" class="touch">
+  <button data-key="Escape">Esc</button>
+  <button data-key="Space">Pause</button>
+  <button data-key="F2">New</button>
+  <button data-key="Q">Quit</button>
+  <button data-key="F1">Help</button>
+  <button data-key="F3">Opts</button>
+  <button data-key="M">Mute</button>
+  <button data-key="P">Pause?</button>
+</div>
+<script src="odin.js"></script>
+<script src="platform.js"></script>
+</body>
+</html>

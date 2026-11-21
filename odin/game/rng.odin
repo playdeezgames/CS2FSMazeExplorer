@@ -3,7 +3,7 @@ package game
 import "core:math/bits"
 
 // xoshiro256** seeded through splitmix64. The core owns its generator so a seed reproduces a game
-// exactly on every platform (docs/PORT.md D9).
+// exactly on every platform (design/PORT.md D9).
 Rng :: struct {
 	s: [4]u64,
 }

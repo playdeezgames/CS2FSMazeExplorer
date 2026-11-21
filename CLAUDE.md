@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Maze Explorer of SPLORR!!**: a port of an old F# game (the sample for the "C# to F#" blog series, https://csharptofsharp.wordpress.com/) to the user's Odin + `js_wasm32` stack, web only. The F# in `MazeExplorer/` is the **oracle for the port**, not something to extend (legacy .NET 4.5 WinForms, no tests; `dotnet` 10 cannot build it, and the port does not need it to). The port lives in `odin/`.
 
-Decisions are the user's and are logged in `docs/PORT.md`; the milestone plan is `docs/PORT_PLAN.md` (M0 to M6 done, M7 release prep needs the user). **The exact port ships first**; the F#'s quirks (Q1 to Q12 in `PORT.md`) are reproduced on purpose and marked `QUIRK Qn` in code, to be dealt with after the port. Any departure from the F# behaviour goes in `PORT.md` and is asked about first. Title, web only, 256x144 frame, jsfxr sounds (not the original wavs), original art and font, options plus best score saved: all decided.
+Decisions are the user's and are logged in `design/PORT.md`; the milestone plan is `design/PORT_PLAN.md` (M0 to M6 done, M7 release prep needs the user). **The exact port ships first**; the F#'s quirks (Q1 to Q12 in `PORT.md`) are reproduced on purpose and marked `QUIRK Qn` in code, to be dealt with after the port. Any departure from the F# behaviour goes in `PORT.md` and is asked about first. Title, web only, 256x144 frame, jsfxr sounds (not the original wavs), original art and font, options plus best score saved: all decided.
 
 ## Commands
 
@@ -45,4 +45,4 @@ Packages import each other by relative path. Everything below `platform/` compil
 
 ## The F# original, for reference
 
-Four projects under `MazeExplorer/`: `MazeExplorerLibrary` (generic maze: Prim growth on a **square** 4-neighbour grid; the Hex and Intercardinal modules are unused), `MazeExplorerGame` (immutable `State`, `Action.act` with `Turn | Move | Drink`, `Movement`, `ItemPickup`, `Difficulty`/`Constants`, `Monsters`), `MazeExplorerUILibrary` (8x8 `'X'` pattern bitmaps, palette, font, tiles, `FrameBuffer`), `MazeExplorerUI` (screens, `Input.fs`, `Audio.fs`, a mutable `GameState`). The compile order in each `.fsproj` is a good reading order. `docs/PORT.md` lists the behaviours worth knowing (generation, combat, scoring, constants).
+Four projects under `MazeExplorer/`: `MazeExplorerLibrary` (generic maze: Prim growth on a **square** 4-neighbour grid; the Hex and Intercardinal modules are unused), `MazeExplorerGame` (immutable `State`, `Action.act` with `Turn | Move | Drink`, `Movement`, `ItemPickup`, `Difficulty`/`Constants`, `Monsters`), `MazeExplorerUILibrary` (8x8 `'X'` pattern bitmaps, palette, font, tiles, `FrameBuffer`), `MazeExplorerUI` (screens, `Input.fs`, `Audio.fs`, a mutable `GameState`). The compile order in each `.fsproj` is a good reading order. `design/PORT.md` lists the behaviours worth knowing (generation, combat, scoring, constants).

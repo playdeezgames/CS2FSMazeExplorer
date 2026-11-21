@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Generates the fifteen sound effects of Maze Explorer of SPLORR!! with jsfxr (https://sfxr.me),
-// replacing the original .wav files (docs/PORT.md D8). Deterministic: Math.random is seeded, so the
+// replacing the original .wav files (design/PORT.md D8). Deterministic: Math.random is seeded, so the
 // same jsfxr scripts give the same files.
 //
 //   node tools/gen_sfx.js --sfxr DIR [--out odin/platform/web/page/sfx]

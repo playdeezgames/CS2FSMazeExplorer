@@ -158,7 +158,7 @@ q4_guard_keeps_the_exit :: proc(t: ^testing.T) {
 	testing.expect_value(t, list[0], game.Item_Type.Exit)
 }
 
-// Q4 (docs/PORT.md): measured, then guarded by keep_exit. Records how many dead ends mazes have and how often a
+// Q4 (design/PORT.md): measured, then guarded by keep_exit. Records how many dead ends mazes have and how often a
 // fixed item (the Exit above all) is dropped. The Exit is the only one that makes a run unwinnable.
 @(test)
 measure_q4_missing_fixed_items :: proc(t: ^testing.T) {

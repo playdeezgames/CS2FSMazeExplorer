@@ -50,7 +50,7 @@ App :: struct {
 	sfx:            game.Sfx, // the sound of the last action, for the page to play
 	paused_at_ms:   f64, // when play was left for pause, help or options
 	back_to_play:   bool, // Help and Options: opened from play, so Esc resumes it
-	best:           [game.Difficulty]int, // best grand total per difficulty (docs/PORT.md D11)
+	best:           [game.Difficulty]int, // best grand total per difficulty (design/PORT.md D11)
 	new_best:       bool, // the score on screen beat the previous best
 	next_seed:      u64, // the seed of the next new game
 	settings_dirty: bool, // options or best changed since the page last stored them

@@ -2,7 +2,7 @@ package ui
 
 import "../game"
 
-// What the page keeps in localStorage (docs/PORT.md D11): the options and the best grand total
+// What the page keeps in localStorage (design/PORT.md D11): the options and the best grand total
 // per difficulty, as one short line of text:
 //
 //	MX1 <sfx 0|1> <pause 0|1> <difficulty 0..2> <best easy> <best normal> <best hard>
